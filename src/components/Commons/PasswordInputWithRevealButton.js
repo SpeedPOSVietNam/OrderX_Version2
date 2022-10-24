@@ -20,6 +20,7 @@ export const PasswordInputWithRevealButton = ({
   value,
   onChangeText,
   textHolder,
+  ImageSrc,
   ...props
 }) => {
   const [isReveal, setReveal] = useState(false);
@@ -39,7 +40,7 @@ export const PasswordInputWithRevealButton = ({
           ...FONTS.body3,
           color: COLORS.black,
           textAlign: 'center',
-          borderRadius: SIZES.radius10,
+          borderRadius: SIZES.radius,
           borderColor: COLORS.title,
           borderWidth: SIZES.border,
           backgroundColor: COLORS.white,
@@ -55,6 +56,15 @@ export const PasswordInputWithRevealButton = ({
         iconStyle={{tintColor: COLORS.secondary}}
         iconSize={25}
         onPress={() => setReveal(!isReveal)}
+      />
+      <Image
+        style={{
+          position: 'absolute',
+          left: SIZES.padding2,
+          width: 25,
+          height: 25,
+        }}
+        source={ImageSrc}
       />
     </View>
   );

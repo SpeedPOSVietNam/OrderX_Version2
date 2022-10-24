@@ -6,10 +6,10 @@ export const orderx_vn = require('../assets/images/orderX_VN.png');
 export const orderx_en = require('../assets/images/orderX_EN.png');
 
 export default {
-    banVeCafe,
-    speedLogo,
-    speedLogoLight,
-    icon,
-    orderx_vn,
-    orderx_en,
+  banVeCafe,
+  speedLogo,
+  speedLogoLight,
+  icon,
+  orderx_vn,
+  orderx_en,
 };

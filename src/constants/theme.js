@@ -15,6 +15,11 @@ export const COLORS = {
   danger: '#E01F3D',
   title: '#215DBF',
 
+  // Table Status
+  TableStatusRed: '#E80000',
+  TableStatusGreen: '#54B842',
+  TableStatusBlue: '#008EFF',
+
   white: '#F6F6F6',
   black: '#222831',
 

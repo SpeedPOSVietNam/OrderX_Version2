@@ -7,6 +7,7 @@ import {
   Alert,
   SafeAreaView,
   Image,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {COLORS, FONTS, SIZES} from '../constants/theme';
 import {
@@ -16,56 +17,114 @@ import {
 } from '../components';
 import icons from '../constants/icons';
 
-export const EnterPassword = ({navigarion}) => {
+export const EnterPassword = ({navigation}) => {
+  const [ClinetName, setCilentName] = useState('OrderX');
   const [waiterCode, setWaiterCode] = useState('');
-  const client = {data: {ClientName: 'BanhMi'}};
-  const venue = {data: {VenueName: 'BanhMiVang'}};
   return (
-    <SafeAreaView style={{flex: 1, alignItems: 'center'}}>
-      {/* Client/Venue information */}
-      <Image
-        source={{
-          uri: 'https://speedup.vn/wp-content/themes/onda/images/logo.svg',
-        }}
-        style={{width: 150, height: 150}}
-        resizeMode={'contain'}
-      />
-      <Text
+    <KeyboardAvoidingView
+      style={{
+        flex: 1,
+      }}>
+      <View
         style={{
-          ...FONTS.body4,
-          color: COLORS.secondary,
-          textAlign: 'center',
-          marginBottom: 50,
+          paddingHorizontal: 10,
+          paddingVertical: 20,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
         }}>
-        {`Client: ${client.data?.ClientName}\n`}
-        {`Venue: ${venue.data?.VenueName}`}
-      </Text>
-      {/* Enter Waiter Code */}
-      <Text style={{...FONTS.h3, color: COLORS.black, textAlign: 'center'}}>
-        Enter Waiter Code
-      </Text>
-      <PasswordInputWithRevealButton
-        keyboardType={'number-pad'}
-        value={waiterCode}
-        onChangeText={value => setWaiterCode(value)}
-      />
-      <MyButton
-        icon={icons.login}
-        iconStyle={{tintColor: COLORS.white}}
-        title={'LOGIN'}
-        titleStyle={{
-          ...FONTS.h4,
-          color: COLORS.white,
-          marginLeft: SIZES.padding,
-        }}
-        containerStyle={{
-          backgroundColor: COLORS.info,
-          borderRadius: SIZES.radius,
-          marginBottom: SIZES.padding,
-        }}
-        onPress={() => Alert.alert('hello')}
-      />
-      <AppVersion containerStyle={{position: 'absolute', bottom: 0}} />
-    </SafeAreaView>
+        <TouchableOpacity onPress={() => navigation.push('LoginScreen')}>
+          <Image
+            source={icons.arrowLeft}
+            style={{width: 20, height: 20}}
+            resizeMode={'contain'}
+          />
+        </TouchableOpacity>
+        <Text
+          style={{
+            color: COLORS.title,
+            fontWeight: 'bold',
+            fontSize: SIZES.body2,
+          }}>
+          Have a nice day, {ClinetName}!
+        </Text>
+        <Text />
+      </View>
+
+      <View
+        style={{
+          alignItems: 'center',
+        }}>
+        <Image
+          source={require('../assets/images/speed-logo.png')}
+          style={{
+            width: 150,
+            height: 150,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          resizeMode={'contain'}
+        />
+      </View>
+
+      <View
+        style={{
+          flex: 0.5,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text
+          style={{
+            ...FONTS.body4,
+            color: COLORS.secondary,
+            textAlign: 'center',
+            marginBottom: 50,
+          }}
+        />
+        <Text
+          style={{
+            ...FONTS.h3,
+            color: COLORS.title,
+            textAlign: 'center',
+            fontWeight: 'bold',
+          }}>
+          Enter PASSWORD
+        </Text>
+        <PasswordInputWithRevealButton
+          ImageSrc={icons.lock}
+          textHolder={'Enter client GUID'}
+          keyboardType={'number-pad'}
+          value={waiterCode}
+          // onChangeText={value => setWaiterCode(value)}
+        />
+        <MyButton
+          iconStyle={{tintColor: COLORS.white}}
+          title={'LOGIN'}
+          titleStyle={{
+            ...FONTS.h4,
+            color: COLORS.white,
+            marginLeft: SIZES.padding,
+            marginRight: SIZES.padding,
+          }}
+          containerStyle={{
+            backgroundColor: COLORS.info,
+            borderRadius: SIZES.radius,
+            marginBottom: SIZES.padding,
+          }}
+          onPress={() => navigation.navigate('Main')}
+        />
+      </View>
+
+      <View
+        style={{
+          flex: 0.5,
+          justifyContent: 'flex-end',
+          alignSelf: 'center',
+        }}>
+        <AppVersion />
+      </View>
+    </KeyboardAvoidingView>
   );
 };

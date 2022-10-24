@@ -28,7 +28,6 @@ export const LoginScreen = ({navigation}) => {
   if (clientID) {
     return (
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{
           flex: 1,
           flexDirection: 'column',
@@ -41,7 +40,11 @@ export const LoginScreen = ({navigation}) => {
             justifyContent: 'center',
             alignSelf: 'center',
           }}>
-          <Image source={images.orderx_en} style={{width: 300, height: 85}} />
+          <Image
+            source={images.orderx_en}
+            style={{width: 300, height: 85}}
+            resizeMode={'contain'}
+          />
         </View>
 
         <View
@@ -62,7 +65,7 @@ export const LoginScreen = ({navigation}) => {
             Contact SpeedPOS to get Access Code
           </Text>
           <PasswordInputWithRevealButton
-            textHolder={'Enter client GUID'}
+            textHolder={'Enter PASSWORD'}
             value={ClientCode}
             onChangeText={value => setClientCode(value)}
           />
