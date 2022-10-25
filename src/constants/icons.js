@@ -22,7 +22,7 @@ export const bias_rect = require('../assets/icons/icons8_rhombus_80px.png');
 export const bias_rect_filled = require('../assets/icons/icons8_rhombus_80px_1.png');
 export const done = require('../assets/icons/icons8_Done_80px.png');
 export const oneColumn = require('../assets/icons/icons8_view_headline_80px_1.png');
-export const search = require('../assets/icons/icons8_search_80px.png');
+export const search = require('../assets/icons/search_25px.png');
 export const checked_circle = require('../assets/icons/icons8_Check_Circle_80px.png');
 export const uncheck_circle = circle;
 export const minus = require('../assets/icons/icons8_subtract_80px.png');
@@ -30,10 +30,10 @@ export const empty = require('../assets/icons/icons8_empty_box_90px.png');
 export const unchecked = require('../assets/icons/icons8_unchecked_checkbox_80px.png');
 export const checked = require('../assets/icons/icons8_checked_checkbox_80px.png');
 export const trash = require('../assets/icons/icons8_Delete_80px.png');
-export const closeTable = require('../assets/icons/icons8_logout_rounded_left_80px.png');
+
 export const setting = require('../assets/icons/icons8_settings_80px.png');
 export const image = require('../assets/icons/icons8_image_80px.png');
-export const logout = closeTable;
+
 export const waiter = require('../assets/icons/icons8_waiter_80px.png');
 export const editMap = require('../assets/icons/icons8_map_editing_80px.png');
 export const login = require('../assets/icons/icons8_login_80px_1.png');
@@ -69,6 +69,11 @@ export const onAccount = require('../assets/icons/icons8_identification_document
 export const voucher = require('../assets/icons/icons8_loyalty_card_80px.png');
 export const speed_logo = require('../assets/icons/speedpos_icon_50px.png');
 export const verify = require('../assets/icons/Verify.png');
+export const history = require('../assets/icons/History_btn_40px.png');
+export const logout = require('../assets/icons/LogOut_btn_40px.png');
+
+export const success = require('../assets/icons/Ok_100px.png');
+export const fail = require('../assets/icons/Fail_100px.png');
 
 export default {
   grid,
@@ -103,10 +108,8 @@ export default {
   unchecked,
   checked,
   trash,
-  closeTable,
   setting,
   image,
-  logout,
   waiter,
   editMap,
   login,
@@ -141,4 +144,8 @@ export default {
   voucher,
   speed_logo,
   verify,
+  history,
+  logout,
+  success,
+  fail,
 };

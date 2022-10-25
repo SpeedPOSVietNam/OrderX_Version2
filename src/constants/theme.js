@@ -10,7 +10,11 @@ export const COLORS = {
   primary: '#0072E3', //'#EC4424',
   secondary: '#6c757d',
   info: '#0072E3',
-  success: '#00A04A',
+
+  //Payment Status
+  success: '#4DAF50',
+  fail: '#FF0000',
+
   warning: '#FFB830',
   danger: '#E01F3D',
   title: '#215DBF',
@@ -64,6 +68,8 @@ export const SIZES = {
   body3: 17,
   body4: 14,
   body5: 12,
+  body6: 15,
+  body7: 25,
 
   // app dimensions
   width,

@@ -28,6 +28,7 @@ export const LoginScreen = ({navigation}) => {
   if (clientID) {
     return (
       <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{
           flex: 1,
           flexDirection: 'column',
@@ -65,6 +66,9 @@ export const LoginScreen = ({navigation}) => {
             Contact SpeedPOS to get Access Code
           </Text>
           <PasswordInputWithRevealButton
+            paramIsReveal={false}
+            RighImageSrc1={icons.eye_close}
+            RighImageSrc2={icons.eye_open}
             textHolder={'Enter PASSWORD'}
             value={ClientCode}
             onChangeText={value => setClientCode(value)}
@@ -79,7 +83,7 @@ export const LoginScreen = ({navigation}) => {
               marginRight: SIZES.padding,
             }}
             containerStyle={{
-              backgroundColor: COLORS.info,
+              backgroundColor: COLORS.title,
               borderRadius: SIZES.radius10,
               marginBottom: SIZES.padding,
             }}

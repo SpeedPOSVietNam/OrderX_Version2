@@ -22,6 +22,7 @@ export const EnterPassword = ({navigation}) => {
   const [waiterCode, setWaiterCode] = useState('');
   return (
     <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{
         flex: 1,
       }}>
@@ -93,7 +94,10 @@ export const EnterPassword = ({navigation}) => {
           Enter PASSWORD
         </Text>
         <PasswordInputWithRevealButton
-          ImageSrc={icons.lock}
+          paramIsReveal={false}
+          RighImageSrc1={icons.eye_close}
+          RighImageSrc2={icons.eye_open}
+          LeftImageSrc={icons.lock}
           textHolder={'Enter client GUID'}
           keyboardType={'number-pad'}
           value={waiterCode}
@@ -109,7 +113,7 @@ export const EnterPassword = ({navigation}) => {
             marginRight: SIZES.padding,
           }}
           containerStyle={{
-            backgroundColor: COLORS.info,
+            backgroundColor: COLORS.title,
             borderRadius: SIZES.radius,
             marginBottom: SIZES.padding,
           }}
