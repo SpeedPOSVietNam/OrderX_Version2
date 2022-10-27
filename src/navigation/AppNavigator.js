@@ -7,6 +7,7 @@ import {EnterPassword} from '../screens/EnterPassword';
 import {Main} from '../screens/Main';
 import {SuccessFul} from '../screens/Successful';
 import {Fail} from '../screens/Fail';
+import {Payment} from '../screens/Payment';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,7 +15,7 @@ export const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Fail"
+        initialRouteName="Payment"
         screenOptions={{
           headerShown: false,
           backgroundColor: COLORS.secondary,
@@ -25,6 +26,7 @@ export const AppNavigator = () => {
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Succesful" component={SuccessFul} />
         <Stack.Screen name="Fail" component={Fail} />
+        <Stack.Screen name="Payment" component={Payment} />
       </Stack.Navigator>
     </NavigationContainer>
   );

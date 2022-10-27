@@ -24,23 +24,13 @@ export const COLORS = {
   TableStatusGreen: '#54B842',
   TableStatusBlue: '#008EFF',
 
-  white: '#F6F6F6',
+  white: '#FFFFFF',
   black: '#222831',
 
-  lightGray: '#F5F6FB',
-  lightGray2: '#eaeaea',
-  lightGray3: '#e4e5e7',
-  lightGray4: '#b4b4b4',
+  amountDue: '#6B6B6B',
+  inputValue: '#0386D0',
 
-  transparentWhite_3: 'rgba(255, 255, 255, 0.3)',
-  transparentWhite_5: 'rgba(255, 255, 255, 0.5)',
-  transparentWhite_8: 'rgba(255, 255, 255, 0.8)',
-  transparentBlack_8: 'rgba(0, 0, 0, 0.8)',
-  transparentBlack_6: 'rgba(0, 0, 0, 0.6)',
-  transparentBlack_4: 'rgba(0, 0, 0, 0.4)',
-  transparentBlack_2: 'rgba(0, 0, 0, 0.2)',
-  transparentBlack_1: 'rgba(0, 0, 0, 0.1)',
-  transparent: 'transparent',
+  lightGray: '#E7E7E7',
 };
 export const SIZES = {
   // bottom tab
@@ -50,6 +40,7 @@ export const SIZES = {
   border: 1,
   base: 8,
   font: 14,
+  radius3: 3,
   radius: 5,
   radius10: 10,
   radius20: 20,

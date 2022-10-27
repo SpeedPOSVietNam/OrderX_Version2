@@ -3,8 +3,9 @@ import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {COLORS, FONTS, SIZES} from '../../constants/theme';
 import icons from '../../constants/icons';
+import {SCREENS} from '../../screens/SCREENS';
 
-export const TableStatusBox = () => {
+export const TableStatusBox = ({navigation}) => {
   const [Status, setStatus] = useState(true);
   return (
     <TouchableOpacity
@@ -13,7 +14,8 @@ export const TableStatusBox = () => {
         height: 60,
         backgroundColor: COLORS.TableStatusRed,
         borderRadius: SIZES.radius,
-      }}>
+      }}
+      onPress={() => navigation.navigate(SCREENS.Payment)}>
       <View
         style={{
           flex: 1,
