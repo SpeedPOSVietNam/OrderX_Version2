@@ -31,6 +31,7 @@ export const COLORS = {
   inputValue: '#0386D0',
 
   lightGray: '#E7E7E7',
+  lightGray2: '#D9D9D9',
 };
 export const SIZES = {
   // bottom tab
@@ -44,7 +45,7 @@ export const SIZES = {
   radius: 5,
   radius10: 10,
   radius20: 20,
-  padding: 10,
+  padding: 5,
   padding2: 15,
 
   // font sizes

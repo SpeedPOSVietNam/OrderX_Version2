@@ -10,13 +10,14 @@ import {
   useMemo,
   FlatList,
   useCallback,
+  Dimensions,
 } from 'react-native';
 import {MyButton} from '../components';
 import icons from '../constants/icons';
 import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
 import {HOOK_PAYMENT_METHOD} from '../hooks/react-query/usePaymentMethod';
 import {HOOK_SALE_PRICE} from '../hooks/react-query/useSalePrice';
-
+import {SCREENS} from './SCREENS';
 const BillPayemnt = () => {
   const renderItem = ({item}) => (
     <View
@@ -45,69 +46,6 @@ const BillPayemnt = () => {
   );
 };
 
-const RenderPaymentMethodItem = () => {
-  const [selectedId, setSelectedId] = useState(null);
-
-  const Item = ({item, onPress, backgroundColor, textColor}) => (
-    <TouchableOpacity
-      style={{
-        paddingVertical: SIZES.padding / 2,
-        backgroundColor: backgroundColor,
-        marginBottom: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-      onPress={onPress}>
-      <Image source={item.icon} />
-      <Text style={{color: textColor, fontWeight: 'bold'}}>{item.name}</Text>
-    </TouchableOpacity>
-  );
-
-  const renderItem = ({item}) => {
-    const backgroundColor = item.id == selectedId ? COLORS.title : COLORS.white;
-    const color = item.id == selectedId ? COLORS.white : COLORS.title;
-
-    return (
-      <Item
-        item={item}
-        onPress={() => {
-          setSelectedId(item.id), Alert.alert('You pressed');
-        }}
-        backgroundColor={backgroundColor}
-        textColor={color}
-      />
-    );
-  };
-
-  return (
-    <View>
-      <FlatList
-        data={HOOK_PAYMENT_METHOD}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        extraData={selectedId}
-      />
-      <MyButton
-        iconStyle={{tintColor: COLORS.white}}
-        title={'CHECK'}
-        titleStyle={{
-          ...FONTS.h3,
-          color: COLORS.white,
-          marginLeft: SIZES.padding,
-          marginRight: SIZES.padding,
-          fontWeight: 'bold',
-        }}
-        containerStyle={{
-          backgroundColor: COLORS.title,
-          height: 100,
-        }}
-        // onPress={checkAccessCode}
-        // onPress={() => navigation.navigate(SCREENS.EnterPassword)}
-      />
-    </View>
-  );
-};
-
 const RenderKeyboard = () => {
   return (
     <View
@@ -130,11 +68,11 @@ const RenderKeyboard = () => {
               style={{
                 ...STYLES.cardShadow,
                 flex: 1,
-                maxWidth: 100,
+                maxWidth: 70,
                 aspectRatio: 1,
                 borderRadius: SIZES.radius3,
                 backgroundColor: COLORS.white,
-                margin: SIZES.padding / 4,
+                margin: SIZES.padding / 3,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
@@ -151,8 +89,75 @@ const RenderKeyboard = () => {
 };
 
 export const Payment = ({navigation}) => {
+  const RenderPaymentMethodItem = () => {
+    const [selectedId, setSelectedId] = useState(null);
+
+    const Item = ({item, onPress, backgroundColor, textColor}) => (
+      <TouchableOpacity
+        style={{
+          paddingVertical: SIZES.padding / 2,
+          backgroundColor: backgroundColor,
+          marginBottom: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onPress={onPress}>
+        <Image source={item.icon} />
+        <Text style={{color: textColor, fontWeight: 'bold'}}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+
+    const renderItem = ({item}) => {
+      const backgroundColor =
+        item.id == selectedId ? COLORS.title : COLORS.white;
+      const color = item.id == selectedId ? COLORS.white : COLORS.title;
+
+      return (
+        <Item
+          item={item}
+          onPress={() => {
+            setSelectedId(item.id), Alert.alert('Confirm your choice?');
+          }}
+          backgroundColor={backgroundColor}
+          textColor={color}
+        />
+      );
+    };
+
+    return (
+      <View>
+        <FlatList
+          data={HOOK_PAYMENT_METHOD}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          extraData={selectedId}
+        />
+
+        <MyButton
+          onPress={() => navigation.navigate(SCREENS.SuccessFul)}
+          iconStyle={{tintColor: COLORS.white}}
+          title={'CHECK'}
+          titleStyle={{
+            ...FONTS.h4,
+            color: COLORS.white,
+            marginLeft: SIZES.padding,
+            marginRight: SIZES.padding,
+            fontWeight: 'bold',
+          }}
+          containerStyle={{
+            backgroundColor: COLORS.title,
+            height: 100,
+          }}
+          // onPress={checkAccessCode}
+          // onPress={() => navigation.navigate(SCREENS.EnterPassword)}
+        />
+      </View>
+    );
+  };
   const [TableID, setTableID] = useState('33');
   const [BillID, setBillID] = useState('24');
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
 
   //   const tableServeBill = useMemo(
   //     () =>
@@ -167,6 +172,8 @@ export const Payment = ({navigation}) => {
       style={{
         flex: 1,
         flexDirection: 'column',
+        width: windowWidth,
+        height: windowHeight,
       }}>
       <View
         style={{
@@ -225,7 +232,7 @@ export const Payment = ({navigation}) => {
             <Text style={{color: COLORS.black}}>12.300 VND</Text>
           </View>
           <Text>
-            -----------------------------------------------------------------
+            ----------------------------------------------------------
           </Text>
           <View
             style={{
@@ -298,7 +305,7 @@ export const Payment = ({navigation}) => {
             alignItems: 'center',
             backgroundColor: COLORS.lightGray,
           }}>
-          <RenderPaymentMethodItem />
+          <RenderPaymentMethodItem navigation={navigation} />
         </View>
 
         <View />

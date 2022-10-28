@@ -75,6 +75,15 @@ export const logout = require('../assets/icons/LogOut_btn_40px.png');
 export const success = require('../assets/icons/Ok_100px.png');
 export const fail = require('../assets/icons/Fail_100px.png');
 
+//icons belong to order history screen
+export const paidBill = require('../assets/icons/Paid_Bill_25px.png');
+export const coffeeTable = require('../assets/icons/Coffee_Table_25px.png');
+export const clock = require('../assets/icons/Clock_25px.png');
+export const paymentMethod = require('../assets/icons/Card_Payment_25px.png');
+export const query = require('../assets/icons/Query_25px.png');
+export const success20px = require('../assets/icons/Success_20px.png');
+export const fail20px = require('../assets/icons/Fail_20px.png');
+
 export default {
   grid,
   zoomIn,
@@ -148,4 +157,11 @@ export default {
   logout,
   success,
   fail,
+  paidBill,
+  coffeeTable,
+  clock,
+  paymentMethod,
+  query,
+  success20px,
+  fail20px,
 };

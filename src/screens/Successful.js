@@ -1,9 +1,14 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Image, Text} from 'react-native';
 import {COLORS, FONTS, SIZES} from '../constants/theme';
 import icons from '../constants/icons';
+import {SCREENS} from './SCREENS';
 
 export const SuccessFul = ({navigation}) => {
+  setTimeout(() => {
+    navigation.navigate(SCREENS.Main);
+  }, 3000);
+
   return (
     <View
       style={{
