@@ -73,17 +73,9 @@ export const EnterPassword = ({navigation}) => {
         style={{
           flex: 0.5,
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'space-evenly',
           alignItems: 'center',
         }}>
-        <Text
-          style={{
-            ...FONTS.body4,
-            color: COLORS.secondary,
-            textAlign: 'center',
-            marginBottom: 50,
-          }}
-        />
         <Text
           style={{
             ...FONTS.h3,
@@ -94,13 +86,14 @@ export const EnterPassword = ({navigation}) => {
           Enter PASSWORD
         </Text>
         <PasswordInputWithRevealButton
-          paramIsReveal={false}
+          paramIsReveal={true}
           RighImageSrc1={icons.eye_close}
           RighImageSrc2={icons.eye_open}
           LeftImageSrc={icons.lock}
           textHolder={'Enter client GUID'}
           keyboardType={'number-pad'}
-          value={waiterCode}
+          // value={waiterCode}
+          value={'1245'}
           // onChangeText={value => setWaiterCode(value)}
         />
         <MyButton

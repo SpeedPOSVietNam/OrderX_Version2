@@ -12,7 +12,7 @@ import {
 import icons from '../constants/icons';
 import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
 import {HOOK_ORDER_CONFIRM_HISTORY} from '../hooks/react-query/useOrderConfirmHistory';
-import {SCREENS} from './SCREENS';
+import {AppVersion} from '../components';
 
 const RenderOrderHistory = () => {
   const RenderItem = ({item}) => (
@@ -156,6 +156,7 @@ export const OrderHistory = ({navigation}) => {
       }}>
       <View
         style={{
+          flex: 0.1,
           width: '100%',
           paddingHorizontal: 10,
           paddingVertical: 20,
@@ -181,8 +182,23 @@ export const OrderHistory = ({navigation}) => {
         </Text>
         <Text />
       </View>
+      <View
+        style={{
+          flex: 0.8,
+          justifyContent: 'flex-end',
+          alignSelf: 'center',
+        }}>
+        <RenderOrderHistory />
+      </View>
 
-      <RenderOrderHistory />
+      <View
+        style={{
+          flex: 0.1,
+          justifyContent: 'flex-end',
+          alignSelf: 'center',
+        }}>
+        <AppVersion />
+      </View>
     </View>
   );
 };

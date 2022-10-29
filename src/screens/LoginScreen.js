@@ -52,7 +52,7 @@ export const LoginScreen = ({navigation}) => {
           style={{
             flex: 0.5,
             flexDirection: 'column',
-            justifyContent: 'center',
+            justifyContent: 'space-evenly',
             alignItems: 'center',
           }}>
           <TouchableOpacity
@@ -61,16 +61,23 @@ export const LoginScreen = ({navigation}) => {
               style={{...FONTS.h1, color: COLORS.title, textAlign: 'center'}}>
               Enter Access Code
             </Text>
+            <Text
+              style={{
+                ...FONTS.body5,
+                color: COLORS.black,
+                textAlign: 'center',
+              }}>
+              Contact SpeedPOS to get Access Code
+            </Text>
           </TouchableOpacity>
-          <Text style={{...FONTS.body5, color: COLORS.black}}>
-            Contact SpeedPOS to get Access Code
-          </Text>
+
           <PasswordInputWithRevealButton
             paramIsReveal={false}
             RighImageSrc1={icons.eye_close}
             RighImageSrc2={icons.eye_open}
             textHolder={'Enter PASSWORD'}
-            value={ClientCode}
+            // value={ClientCode}
+            value={'password'}
             onChangeText={value => setClientCode(value)}
           />
           <MyButton
@@ -84,7 +91,7 @@ export const LoginScreen = ({navigation}) => {
             }}
             containerStyle={{
               backgroundColor: COLORS.title,
-              borderRadius: SIZES.radius10,
+              borderRadius: SIZES.radius,
               marginBottom: SIZES.padding,
             }}
             // onPress={checkAccessCode}

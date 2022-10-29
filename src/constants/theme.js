@@ -23,6 +23,7 @@ export const COLORS = {
   TableStatusRed: '#E80000',
   TableStatusGreen: '#54B842',
   TableStatusBlue: '#008EFF',
+  TableStatusYellow: '#FCB606',
 
   white: '#FFFFFF',
   black: '#222831',

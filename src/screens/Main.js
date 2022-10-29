@@ -1,26 +1,42 @@
 import React, {useState} from 'react';
-import {View, Text, Image, TouchableOpacity, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  Alert,
+} from 'react-native';
 import {TableStatusBox} from '../components/Commons/TableStatusBox';
 import icons from '../constants/icons';
 import {MyButton} from '../components';
 import {COLORS, FONTS, SIZES} from '../constants/theme';
-import {PasswordInputWithRevealButton} from '../components';
+import {PasswordInputWithRevealButton, AppVersion} from '../components';
 import {SCREENS} from './SCREENS';
 import {HOOK_TABLE} from '../hooks/react-query/useTable';
 
 export const Main = ({navigation}) => {
-  const [paidStatus, setPaidStatus] = useState(false);
   const TableStatusList = () => {
     const renderItem = ({item}) => (
       <TouchableOpacity
         onPress={() => {
           if (
-            item.colorStatus == COLORS.TableStatusBlue ||
-            item.colorStatus == COLORS.TableStatusGreen
+            (item.colorStatus === COLORS.TableStatusGreen &&
+              item.paidStatus === false) ||
+            (item.colorStatus === COLORS.TableStatusRed &&
+              item.paidStatus === false)
           ) {
             navigation.navigate(SCREENS.Payment);
+          } else if (item.colorStatus === COLORS.TableStatusBlue) {
+            Alert.alert('EMPTY TABLE', 'You can not pay for empty table.');
+          } else if (
+            item.colorStatus === COLORS.TableStatusRed &&
+            item.paidStatus === true
+          ) {
+            Alert.alert('COMPLETE PAYMENT');
+          } else if (item.colorStatus === COLORS.TableStatusYellow) {
+            Alert.alert('COMPLETE EROR', 'It belongs to other waiter.');
           }
-          setPaidStatus(!paidStatus);
         }}
         style={{
           width: 300,
@@ -62,7 +78,7 @@ export const Main = ({navigation}) => {
             {item.tableStatus}
           </Text>
 
-          {paidStatus ? <Image source={icons.verify} /> : null}
+          {item.paidStatus ? <Image source={icons.verify} /> : null}
         </View>
       </TouchableOpacity>
     );
@@ -82,7 +98,7 @@ export const Main = ({navigation}) => {
       }}>
       <View
         style={{
-          flex: 0.2,
+          flex: 0.5,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -115,7 +131,8 @@ export const Main = ({navigation}) => {
       <View
         style={{
           flexDirection: 'column',
-          justifyContent: 'center',
+          flex: 0.8,
+          justifyContent: 'space-evenly',
           alignItems: 'center',
         }}>
         <PasswordInputWithRevealButton
@@ -138,18 +155,26 @@ export const Main = ({navigation}) => {
           containerStyle={{
             backgroundColor: COLORS.title,
             borderRadius: SIZES.radius,
-            marginBottom: SIZES.padding,
+            marginBottom: SIZES.padding2,
           }}
-          onPress={() => navigation.navigate('Main')}
+          onPress={() => Alert.alert('Searched Successfully!')}
         />
       </View>
 
       <View
         style={{
-          flex: 2,
+          flex: 2.5,
           alignItems: 'center',
         }}>
         <TableStatusList />
+      </View>
+      <View
+        style={{
+          flex: 0.5,
+          justifyContent: 'flex-end',
+          alignSelf: 'center',
+        }}>
+        <AppVersion />
       </View>
     </View>
   );
