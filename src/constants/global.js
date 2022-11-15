@@ -7,24 +7,6 @@ export const APPMODE = {
 };
 
 export const APPMODE_CONSTANTS = {
-  // [APPMODE.DEV]: {
-  //   APP_NAME: 'Speed_STA-DEV',
-  //   CODEPUSH_KEY: 'LQrOSHZDEKPicJxy0fAOR0qZCs4jz7pEHFrM8', // staging
-  //   SERVER_HOST_IP: 'http://orderx-dev.speedtech.vn',
-  //   SOCKET_SERVER_URL: 'ws://orderx-io-dev.speedtech.vn:8070',
-  //   SOCKET_APP_KEY: 2264808,
-  //   SHAREPOS_PAYMENT_SECRETKEY: '1111111111111111', // for testing
-  //   APP_CLIENT: {
-  //     guid: '420ca2fa20ca4c079b67178891b97978',
-  //     secretKey: '753159',
-  //   },
-
-  //   // Lưu ý: Cần cập nhật version trong folder android và ios luôn nhé. Sửa chỗ này chỉ tạo thay đổi trên giao diện thôi.
-  //   VERSION: {
-  //     NAME: '1.0.4',
-  //     CODE: '202208261134',
-  //   },
-  // },
   [APPMODE.PROD]: {
     APP_NAME: 'Speed_STA-PROD',
     CODEPUSH_KEY: 'M2uWIBe8id8cN8-mpHtOQHgw1Orq7QqkJXrK_', // production
@@ -43,10 +25,29 @@ export const APPMODE_CONSTANTS = {
       CODE: '202208270730',
     },
   },
+  [APPMODE.DEV]: {
+    APP_NAME: 'Speed_STA-DEV',
+    CODEPUSH_KEY: 'LQrOSHZDEKPicJxy0fAOR0qZCs4jz7pEHFrM8', // staging
+    SERVER_HOST_IP: 'http://orderx-dev.speedtech.vn',
+    SOCKET_SERVER_URL: 'ws://orderx-io-dev.speedtech.vn:8070',
+    SOCKET_APP_KEY: 2264808,
+    SHAREPOS_PAYMENT_SECRETKEY: '1111111111111111', // for testing
+    APP_CLIENT: {
+      guid: '420ca2fa20ca4c079b67178891b97978',
+      secretKey: '753159',
+    },
+
+    // Lưu ý: Cần cập nhật version trong folder android và ios luôn nhé. Sửa chỗ này chỉ tạo thay đổi trên giao diện thôi.
+    VERSION: {
+      NAME: '1.0.4',
+      CODE: '202208261134',
+    },
+  },
 };
 
 export const getAppModeConstantValue = propertyName => {
-  const currentAppMode = getAppMode() || APPMODE.DEV;
+  const currentAppMode = getAppMode() || APPMODE.PROD;
+  // const currentAppMode = APPMODE.DEV;
   return APPMODE_CONSTANTS[currentAppMode][propertyName];
 };
 

@@ -23,76 +23,97 @@ import {
   getMobileOrderConfig,
   getWaiter,
   waiterLogin,
+  useClient,
 } from '../hooks';
 import {authSelectors, useStore} from '../store';
+import {SCREENS} from './SCREENS';
+import {base64Icon} from '../helpers/utils';
 
 export const EnterPassword = ({route, navigation}) => {
   const {ClientGUID, PartnerGUID, VenueGUID} = route.params;
-  const [clientID, setClientID] = useState(null);
-  const [venueID, setVenueID] = useState(null);
-  const [clientGUID, setClientGUID] = useState(ClientGUID);
-  const [venueGUID, setVenueGUID] = useState(VenueGUID);
+  const clientGUID = useStore(authSelectors.clientGUID);
+  const setClientGUID = useStore(authSelectors.setClientGUID);
+  const venueGUID = useStore(authSelectors.venueGUID);
+  const setVenueGUID = useStore(authSelectors.setVenueGUID);
   const setWaiterID = useStore(authSelectors.setWaiterID);
-
+  const clientID = useStore(authSelectors.clientID);
+  const setClientID = useStore(authSelectors.setClientID);
+  const venueID = useStore(authSelectors.venueID);
+  const setVenueID = useStore(authSelectors.setVenueID);
+  // console.log(
+  //   'CHECK DEVICE LOGIN',
+  //   clientGUID != null &&
+  //     clientID == null &&
+  //     venueGUID != null &&
+  //     venueID == null,
+  // );
   useEffect(() => {
-    if (
-      clientGUID != null &&
-      clientID == null &&
-      venueGUID != null &&
-      venueID == null
-    ) {
-      // setGlobalLoading('Device logging in...');
-      deviceLogin()
-        .then(async result => {
-          const {
-            ClientGUID,
-            ClientID,
-            VenueGUID,
-            VenueID,
-            DateCreated,
-            DateExpired,
-            DateModified,
-          } = result;
+    // if (
+    //   clientGUID != null &&
+    //   clientID == null &&
+    //   venueGUID != null &&
+    //   venueID == null
+    // ) {
+    // setGlobalLoading('Device logging in...');
+    deviceLogin()
+      .then(async result => {
+        const {
+          ClientGUID,
+          ClientID,
+          VenueGUID,
+          VenueID,
+          DateCreated,
+          DateExpired,
+          DateModified,
+        } = result;
 
-          console.log('result', result);
-          if (ClientID == null) {
-            console.log('ClientID not found in server response.');
-            // throw new Error('ClientID not found in server response.');
-          } else if (VenueID == null) {
-            console.log('VenueID not found in server response.');
-            // throw new Error('VenueID not found in server response.');
+        console.log('RESULT', result);
+        if (ClientID == null) {
+          console.log('ClientID not found in server response.');
+          // throw new Error('ClientID not found in server response.');
+        } else if (VenueID == null) {
+          console.log('VenueID not found in server response.');
+          // throw new Error('VenueID not found in server response.');
+        } else {
+          // check for mobileorder config available
+          const config = await getMobileOrderConfig({ClientID, VenueID});
+          console.log('clientID', ClientID, 'venueID', VenueID);
+          if (config[0]) {
+            setClientID(ClientID);
+            setVenueID(VenueID);
+            // trackEvent(TRACK_EVENT_NAME.DEVICE_LOGIN, {
+            //   result: 'success',
+            //   ClientID,
+            //   VenueID,
+            // });
+            console.log('Get data Success');
           } else {
-            // check for mobileorder config available
-            const config = await getMobileOrderConfig({ClientID, VenueID});
-            console.log('clientID', ClientID, 'venueID', VenueID);
-            if (config[0]) {
-              setClientID(ClientID);
-              setVenueID(VenueID);
-              // trackEvent(TRACK_EVENT_NAME.DEVICE_LOGIN, {
-              //   result: 'success',
-              //   ClientID,
-              //   VenueID,
-              // });
-              console.log('Get data Success');
-            } else {
-              throw Error(
-                `MobileOrder configuration for Venue ${venueID} is required.\n\nPlease contact your administrator.`,
-              );
-            }
+            throw Error(
+              `MobileOrder configuration for Venue ${venueID} is required.\n\nPlease contact your administrator.`,
+            );
           }
-        })
-        .catch(e => {
-          setClientGUID(null); // remove clientGUID if device login failed
-          setVenueGUID(null);
-          console.log(e.message);
+        }
+      })
+      .catch(e => {
+        setClientGUID(null); // remove clientGUID if device login failed
+        setVenueGUID(null);
+        console.log(e.message);
 
-          // addAlert({ color: COLORS.danger, title: 'Device Login Failed', message: e.message });
-        })
-        .finally(() => {
-          // setGlobalLoading(false);
-        });
-    }
-  }, [clientGUID, clientID, venueGUID, venueID]);
+        // addAlert({ color: COLORS.danger, title: 'Device Login Failed', message: e.message });
+      })
+      .finally(() => {
+        // setGlobalLoading(false);
+      });
+  }, [
+    clientGUID,
+    clientID,
+    setClientGUID,
+    setClientID,
+    setVenueGUID,
+    setVenueID,
+    venueGUID,
+    venueID,
+  ]);
 
   const checkPasswordAsync = async () => {
     const waiter = await getWaiter({
@@ -100,18 +121,9 @@ export const EnterPassword = ({route, navigation}) => {
       VenueID: venueID,
       PinCode: waiterCode,
     });
+    console.log('WAITER INFO', waiter);
 
     if (waiter?.length === 0) {
-      // trackEvent(TRACK_EVENT_NAME.WAITER_LOGIN, {
-      //   result: 'failed',
-      //   reason: 'Incorrect waiter code',
-      //   waiterCode,
-      // });
-      // addAlert({
-      //   title: 'Login Failed',
-      //   message: 'Incorrect Waiter Code',
-      //   color: COLORS.danger,
-      // });
       console.log(
         'result: failed',
         'reason: Incorrect waiter code',
@@ -119,16 +131,6 @@ export const EnterPassword = ({route, navigation}) => {
       );
       Alert.alert('Login Failed', 'Incorrect waiter code');
     } else if (!waiter[0].IsActive) {
-      // trackEvent(TRACK_EVENT_NAME.WAITER_LOGIN, {
-      //   result: 'failed',
-      //   reason: 'Account deactivated',
-      //   waiterCode,
-      // });
-      // addAlert({
-      //   title: 'Account deactivated.',
-      //   message: 'Contact your administrator for more detail.',
-      //   color: COLORS.danger,
-      // });
       Alert.alert(
         'Account deactived',
         'Contact your administrator for more detail.',
@@ -143,11 +145,6 @@ export const EnterPassword = ({route, navigation}) => {
         DateModified,
         DateExpired,
       } = result;
-      // trackEvent(TRACK_EVENT_NAME.WAITER_LOGIN, {
-      //   result: 'success',
-      //   waiterCode,
-      //   waiterID: waiter[0].WaiterID,
-      // }
       console.log('result', 'success', {
         waiterCode,
         waiterID: waiter[0].WaiterID,
@@ -155,6 +152,7 @@ export const EnterPassword = ({route, navigation}) => {
 
       console.log('Check waiter device login: ', result);
       setWaiterID(waiter[0].WaiterID);
+      navigation.navigate(SCREENS.Main);
     }
   };
 
@@ -170,8 +168,8 @@ export const EnterPassword = ({route, navigation}) => {
       .catch(e => Alert.alert('ERROR', e.message));
   };
 
-  const [ClinetName, setCilentName] = useState('OrderX');
-  const [waiterCode, setWaiterCode] = useState('');
+  const [waiterCode, setWaiterCode] = useState('100');
+  const client = useClient(clientID != null);
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -197,9 +195,9 @@ export const EnterPassword = ({route, navigation}) => {
           style={{
             color: COLORS.title,
             fontWeight: 'bold',
-            fontSize: SIZES.body2,
+            fontSize: SIZES.body3,
           }}>
-          Have a nice day, {ClinetName}!
+          Have a nice day, {client.data?.ClientName}!
         </Text>
         <Text />
       </View>
@@ -209,14 +207,8 @@ export const EnterPassword = ({route, navigation}) => {
           alignItems: 'center',
         }}>
         <Image
-          source={require('../assets/images/speed-logo.png')}
-          style={{
-            width: 150,
-            height: 150,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          source={{uri: base64Icon(client.data?.ImageData)}}
+          style={{width: 150, height: 150}}
           resizeMode={'contain'}
         />
       </View>
@@ -238,7 +230,7 @@ export const EnterPassword = ({route, navigation}) => {
           Enter PASSWORD
         </Text>
         <PasswordInputWithRevealButton
-          paramIsReveal={true}
+          paramIsReveal={false}
           RighImageSrc1={icons.eye_close}
           RighImageSrc2={icons.eye_open}
           LeftImageSrc={icons.lock}

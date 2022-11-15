@@ -49,7 +49,7 @@ export const apiGET = async (path, queries) => {
   const pathQuery = path + createQueryString(queries);
   const {urlFetch, partnerGuid, currentUTC, token} = createToken(pathQuery);
 
-  SHOW_LOG && console.log('GET ', urlFetch);
+  SHOW_LOG && console.log('GET ', urlFetch, 'PATH & QUERIES', path, queries);
 
   const res = await fetch(urlFetch, {
     method: 'GET',
@@ -62,7 +62,6 @@ export const apiGET = async (path, queries) => {
       ClientGuid: getClientGUID(),
     },
   });
-
   const {Status, Data, Message} = await res.json();
   if (Status === 200) {
     return Data;
@@ -90,7 +89,15 @@ export const apiPOST = async (path, body, queries, willDisplayErr = true) => {
     body,
   );
 
-  SHOW_LOG && console.log('POST ', urlFetch, JSON.stringify(body));
+  SHOW_LOG &&
+    console.log(
+      'POST ',
+      urlFetch,
+      JSON.stringify(body),
+      'PATH & QUERIES',
+      path,
+      queries,
+    );
 
   const res = await fetch(urlFetch, {
     method: 'POST',
@@ -132,7 +139,15 @@ export const apiPUT = async (path, body, queries) => {
     body,
   );
 
-  SHOW_LOG && console.log('PUT ', urlFetch, JSON.stringify(body));
+  SHOW_LOG &&
+    console.log(
+      'PUT ',
+      urlFetch,
+      JSON.stringify(body),
+      'PATH & QUERIES',
+      path,
+      queries,
+    );
 
   const res = await fetch(urlFetch, {
     method: 'PUT',

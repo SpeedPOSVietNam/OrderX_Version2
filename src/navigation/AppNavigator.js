@@ -9,6 +9,8 @@ import {SuccessFul} from '../screens/Successful';
 import {Fail} from '../screens/Fail';
 import {Payment} from '../screens/Payment';
 import {OrderHistory} from '../screens/OrderHistory';
+import {SettingScreen} from '../screens/SettingScreen';
+
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
@@ -22,6 +24,7 @@ export const AppNavigator = () => {
           animationEnabled: true,
         }}>
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="SettingScreen" component={SettingScreen} />
         <Stack.Screen name="EnterPassword" component={EnterPassword} />
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="SuccessFul" component={SuccessFul} />

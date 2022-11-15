@@ -32,7 +32,7 @@ import {
 } from '../store';
 
 export const LoginScreen = ({navigation}) => {
-  const [ClientCode, setClientCode] = useState('');
+  const [ClientCode, setClientCode] = useState('SpeedDemo');
   const setVenueGUID = useStore(authSelectors.setVenueGUID);
   const setClientGUID = useStore(authSelectors.setClientGUID);
 
@@ -64,8 +64,6 @@ export const LoginScreen = ({navigation}) => {
         navigation.navigate(SCREENS.EnterPassword, result);
         setVenueGUID(VenueGUID);
         setClientGUID(ClientGUID);
-
-        console.log('getVenueGUID', typeof getVenueGUID());
 
         // trackEvent(TRACK_EVENT_NAME.CLIENT_LOGIN, {
         //   result: 'success',
@@ -114,7 +112,7 @@ export const LoginScreen = ({navigation}) => {
           alignItems: 'center',
         }}>
         <TouchableOpacity
-          onLongPress={() => Alert.alert('Why are u doing long press?')}>
+          onLongPress={() => navigation.navigate(SCREENS.SettingScreen)}>
           <Text style={{...FONTS.h1, color: COLORS.title, textAlign: 'center'}}>
             Enter Access Code
           </Text>
@@ -132,7 +130,7 @@ export const LoginScreen = ({navigation}) => {
           paramIsReveal={false}
           RighImageSrc1={icons.eye_close}
           RighImageSrc2={icons.eye_open}
-          textHolder={'Enter PASSWORD'}
+          textHolder={'Enter ACCESS CODE'}
           value={ClientCode}
           onChangeText={value => setClientCode(value)}
         />

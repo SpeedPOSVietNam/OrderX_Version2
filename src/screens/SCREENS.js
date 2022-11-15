@@ -6,4 +6,5 @@ export const SCREENS = {
   Main: 'Main',
   SuccessFul: 'SuccessFul',
   Fail: 'Fail',
+  SettingScreen: 'SettingScreen',
 };
