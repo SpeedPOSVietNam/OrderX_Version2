@@ -83,7 +83,7 @@ export const paymentMethod = require('../assets/icons/Card_Payment_25px.png');
 export const query = require('../assets/icons/Query_25px.png');
 export const success20px = require('../assets/icons/Success_20px.png');
 export const fail20px = require('../assets/icons/Fail_20px.png');
-
+export const downArrow = require('../assets/icons/Down_Arrow.png');
 export default {
   grid,
   zoomIn,
@@ -164,4 +164,5 @@ export default {
   query,
   success20px,
   fail20px,
+  downArrow,
 };

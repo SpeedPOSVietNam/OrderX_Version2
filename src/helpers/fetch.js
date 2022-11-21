@@ -36,7 +36,6 @@ const createToken = (path, data = null) => {
       secretKey,
     ).toString();
   }
-
   return {
     token,
     partnerGuid,
@@ -45,6 +44,60 @@ const createToken = (path, data = null) => {
   };
 };
 
+//QR Order
+
+const createOROrderTọken = (path, data = null) => {
+  const urlFetch = getAppModeConstantValue('SERVER_HOST_IP') + path;
+  const secretKey = '123654789';
+  let token;
+  if (data == null) {
+    //console.log('fetch path', typeof path, typeof secretKey);
+    token = hmacSHA256(path, secretKey);
+  }
+  return {
+    urlFetch,
+    token,
+  };
+};
+
+//path
+export const apiQROrderGET = async (path, queries) => {
+  const pathQuery = path + createQueryString(queries);
+  console.log('pathQuery ne', pathQuery);
+  const {urlFetch, token} = createOROrderTọken(pathQuery);
+  SHOW_LOG && console.log('GET ', 'URL FETCH', urlFetch, 'TOKEN', token);
+
+  const res = await fetch(urlFetch, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      PartnerKey: 'UGl4ZWxTcWxiYXNl',
+      Token: token,
+    },
+  });
+
+  const {Status, Data, Message} = await res.json();
+  if (Status === 200) {
+    return Data;
+  }
+
+  // // GET sẽ ko có chỗ nào try catch, nên alert ở đây luôn
+  if (Status === APIResultCode.CoreAuth_Expired) {
+    // ignore
+  } else if (isInApiResultCode(Status)) {
+    addAlert({
+      color: COLORS.warning,
+      title: `WARNING - code: ${Status}`,
+      message: Message,
+    });
+  } else {
+    addAlert({color: COLORS.danger, title: 'GET ERROR', message: Message});
+  }
+  return [];
+};
+
+//Hoang-Luu-old version
 export const apiGET = async (path, queries) => {
   const pathQuery = path + createQueryString(queries);
   const {urlFetch, partnerGuid, currentUTC, token} = createToken(pathQuery);

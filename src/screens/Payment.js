@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,7 @@ import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
 import {HOOK_PAYMENT_METHOD} from '../hooks/react-query/usePaymentMethod';
 import {HOOK_SALE_PRICE} from '../hooks/react-query/useSalePrice';
 import {SCREENS} from './SCREENS';
-const BillPayemnt = () => {
+const BillPayment = () => {
   const renderItem = ({item}) => (
     <View
       style={{
@@ -46,49 +46,59 @@ const BillPayemnt = () => {
   );
 };
 
-const RenderKeyboard = () => {
-  return (
-    <View
-      style={{
-        padding: SIZES.padding,
-        flexGrow: 1,
-      }}>
-      {[
-        [7, 8, 9],
-        [4, 5, 6],
-        [1, 2, 3],
-        [0, '000', '<'],
-      ].map((row, index) => (
-        <View
-          key={'keyboard-row' + index}
-          style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-          {row.map((b, _index) => (
-            <TouchableOpacity
-              key={'keyboard-btn' + _index}
-              style={{
-                ...STYLES.cardShadow,
-                flex: 1,
-                maxWidth: 70,
-                aspectRatio: 1,
-                borderRadius: SIZES.radius3,
-                backgroundColor: COLORS.white,
-                margin: SIZES.padding / 3,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              // onLongPress={handleLongPressKeyboard(b)}
-              // onPressIn={handlerPressKeyboard(b)}
-            >
-              <Text style={{...FONTS.h2, color: COLORS.black}}>{b}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      ))}
-    </View>
-  );
-};
+export const Payment = ({navigation, route}) => {
+  const [inputValue, setInputValue] = useState('0');
+  const handlerPressKeyboard = b => {
+    if (b !== '<') {
+      let strNum = '' + b.toString();
+      console.log(strNum);
+      setInputValue(strNum);
+    } else if (b == '<') {
+      setInputValue(0);
+    }
+  };
+  const RenderKeyboard = () => {
+    return (
+      <View
+        style={{
+          padding: SIZES.padding,
+          flexGrow: 1,
+        }}>
+        {[
+          [7, 8, 9],
+          [4, 5, 6],
+          [1, 2, 3],
+          [0, '000', '<'],
+        ].map((row, index) => (
+          <View
+            key={'keyboard-row' + index}
+            style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+            {row.map((b, _index) => (
+              <TouchableOpacity
+                key={'keyboard-btn' + _index}
+                style={{
+                  ...STYLES.cardShadow,
+                  flex: 1,
+                  maxWidth: '100%',
+                  aspectRatio: 1,
+                  borderRadius: SIZES.radius3,
+                  backgroundColor: COLORS.white,
+                  margin: SIZES.padding / 3,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                // onLongPress={handleLongPressKeyboard(b)}
+                onPress={() => handlerPressKeyboard(b)}>
+                <Text style={{...FONTS.h2, color: COLORS.black}}>{b}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ))}
+      </View>
+    );
+  };
 
-export const Payment = ({navigation}) => {
+  const {TableNum, TRANSACT} = route.params;
   const RenderPaymentMethodItem = () => {
     const [selectedId, setSelectedId] = useState(null);
 
@@ -154,8 +164,7 @@ export const Payment = ({navigation}) => {
       </View>
     );
   };
-  const [TableID, setTableID] = useState('33');
-  const [BillID, setBillID] = useState('24');
+
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
 
@@ -182,9 +191,9 @@ export const Payment = ({navigation}) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          backgroundColor: COLORS.white,
+          backgroundColor: 'red',
         }}>
-        <TouchableOpacity onPress={() => navigation.push('Main')}>
+        <TouchableOpacity onPress={() => navigation.push('TableListMain')}>
           <Image
             source={icons.arrowLeft}
             style={{width: 20, height: 20}}
@@ -197,7 +206,8 @@ export const Payment = ({navigation}) => {
             fontWeight: 'bold',
             fontSize: SIZES.body2,
           }}>
-          Payment - Table {TableID} - Bill {BillID}
+          Payment - Table {JSON.stringify(TableNum)} - Bill{' '}
+          {JSON.stringify(TRANSACT)}
         </Text>
         <Text />
       </View>
@@ -212,7 +222,7 @@ export const Payment = ({navigation}) => {
           style={{
             flex: 0.8,
           }}>
-          <BillPayemnt />
+          <BillPayment />
           <View
             style={{
               paddingHorizontal: 20,
@@ -289,11 +299,9 @@ export const Payment = ({navigation}) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: COLORS.white, fontWeight: 'bold'}}>
-              Input Value
-            </Text>
+            <Text style={{color: COLORS.white, fontWeight: 'bold'}} />
             <Text style={{color: COLORS.inputValue, fontWeight: 'bold'}}>
-              0 VND
+              {inputValue} VND
             </Text>
           </View>
 

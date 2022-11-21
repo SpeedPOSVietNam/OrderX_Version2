@@ -9,3 +9,8 @@ export * from './react-query/queryClient';
 export * from './react-query/useTable';
 export * from './react-query/useClient';
 export * from './react-query/useTableServeBill';
+export * from './react-query/useEmployee';
+export * from './react-query/useRelativeTableNo';
+export * from './react-query/usePostHeader';
+export * from './react-query/useTransactionPayment';
+export * from './react-query/useTransactionHeader';

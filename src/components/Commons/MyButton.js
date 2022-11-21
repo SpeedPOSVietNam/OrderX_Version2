@@ -11,6 +11,7 @@ import {vibrate} from '../../helpers/utils';
 
 export const MyButton = memo(
   ({
+    disable,
     disabled = false,
     vibrateOnPress = false,
 
@@ -159,7 +160,8 @@ export const MyButton = memo(
         onPressOut={onPressOut}
         delayLongPress={delayLongPress}
         onLongPress={handleLongPress}
-        onPress={handleOnPress}>
+        onPress={handleOnPress}
+        disabled={disable}>
         <View
           style={{
             flexDirection: vertical ? 'column' : 'row',

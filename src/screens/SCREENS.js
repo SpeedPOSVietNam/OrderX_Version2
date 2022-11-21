@@ -7,4 +7,7 @@ export const SCREENS = {
   SuccessFul: 'SuccessFul',
   Fail: 'Fail',
   SettingScreen: 'SettingScreen',
+  TableListMain: 'TableListMain',
+  EnterWaiter: 'EnterWaiter',
+  LoadingScreen: 'LoadingScreen',
 };

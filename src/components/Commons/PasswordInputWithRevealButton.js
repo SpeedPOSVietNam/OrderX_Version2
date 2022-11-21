@@ -24,6 +24,8 @@ export const PasswordInputWithRevealButton = ({
   RighImageSrc1,
   RighImageSrc2,
   paramIsReveal,
+  disable,
+  editable,
   ...props
 }) => {
   const [isReveal, setReveal] = useState(paramIsReveal);
@@ -39,6 +41,7 @@ export const PasswordInputWithRevealButton = ({
         value={value}
         placeholder={textHolder}
         onChangeText={onChangeText}
+        editable={editable}
         style={{
           ...FONTS.body3,
           color: COLORS.black,
@@ -60,6 +63,7 @@ export const PasswordInputWithRevealButton = ({
         iconStyle={{tintColor: COLORS.secondary}}
         iconSize={25}
         onPress={() => setReveal(!isReveal)}
+        disable={disable}
       />
       <Image
         style={{
