@@ -80,7 +80,7 @@ export const OrderHistory = ({navigation}) => {
     fetchTransPay();
     fetchTransHeader();
     if (transHeaderData !== undefined && transPayData !== undefined) {
-      console.log('hello');
+    
       for (let i = 0; i < transHeaderData.length; i++) {
         for (let x = 0; x < transPayData.length; x++) {
           if (transHeaderData[i].Transact === transPayData[x].Transact) {

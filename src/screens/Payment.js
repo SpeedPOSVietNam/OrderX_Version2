@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -16,47 +16,107 @@ import {MyButton} from '../components';
 import icons from '../constants/icons';
 import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
 import {HOOK_PAYMENT_METHOD} from '../hooks/react-query/usePaymentMethod';
-import {HOOK_SALE_PRICE} from '../hooks/react-query/useSalePrice';
+import {usePosDetail} from '../hooks';
 import {SCREENS} from './SCREENS';
-const BillPayment = () => {
-  const renderItem = ({item}) => (
-    <View
-      style={{
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        backgroundColor: COLORS.lightGray,
-        width: '99%',
-      }}>
-      <Text style={{color: COLORS.black}}>x{item.quantity}</Text>
-      <Text style={{color: COLORS.black}}>{item.name}</Text>
-      <Text style={{color: COLORS.black}}>
-        {item.price} {item.priceUnit}
-      </Text>
-    </View>
-  );
-  return (
-    <View>
-      <FlatList
-        data={HOOK_SALE_PRICE}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
-    </View>
-  );
-};
+import {roundDecimal, toCurrency} from '../helpers/utils';
 
 export const Payment = ({navigation, route}) => {
-  const [inputValue, setInputValue] = useState('0');
+  const {TableNum, TRANSACT, TransactArray} = route.params;
+  const [allPosDetail, setAllPosDetail] = useState();
+  const [inputValue, setInputValue] = useState();
+
+  console.log('TransactArray fetch', TransactArray);
+  const posDetail = usePosDetail({
+    Transact: JSON.stringify(TRANSACT),
+  });
+
+  const fetchPosDetail = () => {
+    posDetail.then(res => setAllPosDetail(res)).catch(err => console.log(err));
+    return allPosDetail;
+  };
+
+  useEffect(() => {
+    fetchPosDetail();
+  }, [TableNum]);
+  const BillPayment = () => {
+    const renderItem = ({item}) => (
+      <View
+        style={{
+          paddingHorizontal: 20,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          backgroundColor: COLORS.lightGray,
+          width: '99%',
+        }}>
+        <Text style={{color: COLORS.black}}>x{item.QUAN}</Text>
+        <Text style={{color: COLORS.black}}>{item.Descript}</Text>
+        <Text style={{color: COLORS.black}}>
+          {toCurrency(item.NetCostEach)}
+        </Text>
+      </View>
+    );
+    return (
+      <View>
+        <FlatList
+          data={allPosDetail}
+          renderItem={renderItem}
+          keyExtractor={item => item.UNIQUEID}
+        />
+      </View>
+    );
+  };
+
+  const RenderDulplicateTransact = () => {
+    const renderItem = ({item, index}) => (
+      <TouchableOpacity
+        style={{
+          width: SIZES.padding2 * 4.5,
+          height: 42,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 2,
+        }}>
+        <Text
+          style={{
+            ...FONTS.h2,
+          }}>
+          {index + 1}
+        </Text>
+        <View
+          style={{
+            width: '100%',
+            paddingHorizontal: SIZES.padding,
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              lineHeight: 15,
+              marginBottom: 5,
+            }}>
+            {item}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+    return (
+      <View>
+        <FlatList
+          data={TransactArray}
+          renderItem={renderItem}
+          horizontal={true}
+          keyExtractor={(item, index) => index}
+        />
+      </View>
+    );
+  };
   const handlerPressKeyboard = b => {
     if (b !== '<') {
-      let strNum = '' + b.toString();
-      console.log(strNum);
-      setInputValue(strNum);
+      setInputValue(inputValue + b.toString());
     } else if (b == '<') {
       setInputValue(0);
     }
   };
+
   const RenderKeyboard = () => {
     return (
       <View
@@ -87,7 +147,6 @@ export const Payment = ({navigation, route}) => {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-                // onLongPress={handleLongPressKeyboard(b)}
                 onPress={() => handlerPressKeyboard(b)}>
                 <Text style={{...FONTS.h2, color: COLORS.black}}>{b}</Text>
               </TouchableOpacity>
@@ -98,7 +157,6 @@ export const Payment = ({navigation, route}) => {
     );
   };
 
-  const {TableNum, TRANSACT} = route.params;
   const RenderPaymentMethodItem = () => {
     const [selectedId, setSelectedId] = useState(null);
 
@@ -191,7 +249,7 @@ export const Payment = ({navigation, route}) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          backgroundColor: 'red',
+          backgroundColor: COLORS.white,
         }}>
         <TouchableOpacity onPress={() => navigation.push('TableListMain')}>
           <Image
@@ -222,6 +280,8 @@ export const Payment = ({navigation, route}) => {
           style={{
             flex: 0.8,
           }}>
+          <RenderDulplicateTransact />
+
           <BillPayment />
           <View
             style={{

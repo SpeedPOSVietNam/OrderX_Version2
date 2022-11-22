@@ -14,3 +14,4 @@ export * from './react-query/useRelativeTableNo';
 export * from './react-query/usePostHeader';
 export * from './react-query/useTransactionPayment';
 export * from './react-query/useTransactionHeader';
+export * from './react-query/usePosDetail';

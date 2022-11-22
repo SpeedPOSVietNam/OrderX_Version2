@@ -21,6 +21,8 @@ export const TableListMain = ({navigation}) => {
   const [allPosHeader, setAllPosHeader] = useState();
   const [finalData, setFinalData] = useState();
   const [TableNo, setTableNo] = useState('');
+  const [duplicateTransact, setDuplicateTransact] = useState([]);
+
   const allTable = useTable({});
   const posHeader = usePostHeader({});
 
@@ -32,28 +34,35 @@ export const TableListMain = ({navigation}) => {
     allTable.then(res => setAllTableData(res)).catch(err => console.log(err));
     posHeader.then(res => setAllPosHeader(res)).catch(err => console.log(err));
 
-    console.log('Check data status', allTableData, allPosHeader);
     if (allTableData !== undefined && allPosHeader !== undefined) {
       for (let i = 0; i < allTableData.length; i++) {
         for (let x = 0; x < allPosHeader.length; x++) {
           if (allTableData[i].TableNum === allPosHeader[x].TABLENUM) {
             (allTableData[i].WHOSTART = allPosHeader[x].WHOSTART),
               (allTableData[i].TRANSACT = allPosHeader[x].TRANSACT),
-              setFinalData(allTableData);
+              setDuplicateTransact(
+                pre => [...pre,[allPosHeader[x].TABLENUM,allPosHeader[x].TRANSACT]]
+                // duplicateTransact.push(allPosHeader[x].TRANSACT),
+              );
+            setFinalData(allTableData);
           }
         }
       }
     }
+    return finalData;
   };
 
-  // console.log('fetch pos header', finalData);
+
+  console.log('fetch duplicate TRANSACT len',duplicateTransact.length);
   // console.log('fetch waiter id ', getWaiterID());
   useEffect(() => {
+    setDuplicateTransact([])
     FetchTableData();
+
   }, [TableNo]);
 
   // console.log('Table No', TableNo);
-  // console.log('all table data', allTableData);
+  //console.log('all table data', allTableData);
   const checkTableValue = () => {
     if (TableNo !== '') {
       selectedTable
@@ -65,6 +74,17 @@ export const TableListMain = ({navigation}) => {
   };
 
   const TableStatusList = () => {
+    let arr =[]
+    let x =0;
+    const filterDulplicateTrans = (tableNo) => {
+      while(x<duplicateTransact.length){
+        if (tableNo==duplicateTransact[x][0]){
+          arr.push(duplicateTransact[x][1])
+        }
+        x++
+      }
+    return arr;
+    };
     const renderItem = ({item}) => (
       <TouchableOpacity
         onPress={() => {
@@ -75,6 +95,7 @@ export const TableListMain = ({navigation}) => {
             navigation.navigate(SCREENS.Payment, {
               TableNum: item.TableNum,
               TRANSACT: item.TRANSACT,
+              TransactArray: filterDulplicateTrans(item.TableNum)
             });
           } else if (item.WHOSTART == null) {
             Alert.alert('ERROR', 'You can not pay for empty table.');
