@@ -16,28 +16,39 @@ import {MyButton} from '../components';
 import icons from '../constants/icons';
 import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
 import {HOOK_PAYMENT_METHOD} from '../hooks/react-query/usePaymentMethod';
-import {usePosDetail} from '../hooks';
+import {fetchPostHeader, fetchPosDetail} from '../hooks';
 import {SCREENS} from './SCREENS';
 import {roundDecimal, toCurrency} from '../helpers/utils';
 
 export const Payment = ({navigation, route}) => {
   const {TableNum, TRANSACT, TransactArray} = route.params;
   const [allPosDetail, setAllPosDetail] = useState();
-  const [inputValue, setInputValue] = useState();
+  const [inputValue, setInputValue] = useState('');
+  const [selectedTrans, setSlectedTrans] = useState();
+  const [posHdrByTrans, setPosHdrByTrans] = useState();
+  const [paymentType, setPaymentType] = useState();
+  const [amountLeft, setAmountLeft] = useState();
 
-  console.log('TransactArray fetch', TransactArray);
-  const posDetail = usePosDetail({
-    Transact: JSON.stringify(TRANSACT),
+  const posDetail = fetchPosDetail({
+    Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
   });
 
-  const fetchPosDetail = () => {
+  const posHeader = fetchPostHeader({
+    Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
+  });
+
+  const getPosDetail = () => {
     posDetail.then(res => setAllPosDetail(res)).catch(err => console.log(err));
-    return allPosDetail;
+  };
+  const getPosHeader = () => {
+    posHeader.then(res => setPosHdrByTrans(res)).catch(err => console.log(err));
   };
 
   useEffect(() => {
-    fetchPosDetail();
-  }, [TableNum]);
+    getPosDetail();
+    getPosHeader();
+  }, [selectedTrans, TRANSACT]);
+
   const BillPayment = () => {
     const renderItem = ({item}) => (
       <View
@@ -75,10 +86,17 @@ export const Payment = ({navigation, route}) => {
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 2,
-        }}>
+          backgroundColor: item == selectedTrans ? COLORS.title : '',
+          borderColor: COLORS.title,
+          borderWidth: 1,
+          borderRadius: 3,
+          marginLeft: 5,
+        }}
+        onPress={() => setSlectedTrans(item)}>
         <Text
           style={{
             ...FONTS.h2,
+            color: item == selectedTrans ? COLORS.white : COLORS.title,
           }}>
           {index + 1}
         </Text>
@@ -92,6 +110,7 @@ export const Payment = ({navigation, route}) => {
               textAlign: 'center',
               lineHeight: 15,
               marginBottom: 5,
+              color: item == selectedTrans ? COLORS.white : COLORS.title,
             }}>
             {item}
           </Text>
@@ -111,6 +130,9 @@ export const Payment = ({navigation, route}) => {
   };
   const handlerPressKeyboard = b => {
     if (b !== '<') {
+      if (inputValue !== null) {
+        setInputValue();
+      }
       setInputValue(inputValue + b.toString());
     } else if (b == '<') {
       setInputValue(0);
@@ -184,7 +206,9 @@ export const Payment = ({navigation, route}) => {
         <Item
           item={item}
           onPress={() => {
-            setSelectedId(item.id), Alert.alert('Confirm your choice?');
+            setSelectedId(item.id),
+              Alert.alert('Confirm your choice?'),
+              setPaymentType(item.name);
           }}
           backgroundColor={backgroundColor}
           textColor={color}
@@ -192,6 +216,21 @@ export const Payment = ({navigation, route}) => {
       );
     };
 
+    const handlePayment = () => {
+      console.log('amountLeft', amountLeft);
+      if (amountLeft == undefined) {
+        setAmountLeft(posHdrByTrans[0].FINALTOTAL - Number(inputValue));
+      }
+      if (amountLeft !== undefined) {
+        setAmountLeft(amountLeft - Number(inputValue));
+      }
+    };
+    useEffect(() => {
+      if (amountLeft == 0) {
+        console.log('SUCCESSFUL');
+        navigation.navigate(SCREENS.SuccessFul);
+      }
+    }, [amountLeft]);
     return (
       <View>
         <FlatList
@@ -202,7 +241,7 @@ export const Payment = ({navigation, route}) => {
         />
 
         <MyButton
-          onPress={() => navigation.navigate(SCREENS.SuccessFul)}
+          onPress={() => handlePayment()}
           iconStyle={{tintColor: COLORS.white}}
           title={'CHECK'}
           titleStyle={{
@@ -264,8 +303,7 @@ export const Payment = ({navigation, route}) => {
             fontWeight: 'bold',
             fontSize: SIZES.body2,
           }}>
-          Payment - Table {JSON.stringify(TableNum)} - Bill{' '}
-          {JSON.stringify(TRANSACT)}
+          Payment - Table {JSON.stringify(TableNum)}
         </Text>
         <Text />
       </View>
@@ -279,6 +317,7 @@ export const Payment = ({navigation, route}) => {
         <View
           style={{
             flex: 0.8,
+            height: 100,
           }}>
           <RenderDulplicateTransact />
 
@@ -290,7 +329,9 @@ export const Payment = ({navigation, route}) => {
               justifyContent: 'space-between',
             }}>
             <Text style={{color: COLORS.black}}>NET</Text>
-            <Text style={{color: COLORS.black}}>123.000 VND</Text>
+            <Text style={{color: COLORS.black}}>
+              {posHdrByTrans ? toCurrency(posHdrByTrans[0].NETTOTAL) : ''}
+            </Text>
           </View>
           <View
             style={{
@@ -298,12 +339,31 @@ export const Payment = ({navigation, route}) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <Text style={{color: COLORS.black}}>VAT 10%</Text>
-            <Text style={{color: COLORS.black}}>12.300 VND</Text>
+            <Text style={{color: COLORS.black}}>VAT</Text>
+            <Text style={{color: COLORS.black}}>
+              {posHdrByTrans
+                ? posHdrByTrans[0].TAX1 !== 0
+                  ? toCurrency(posHdrByTrans[0].TAX1)
+                  : posHdrByTrans[0].TAX2 !== 0
+                  ? toCurrency(posHdrByTrans[0].TAX2)
+                  : posHdrByTrans[0].TAX3 !== 0
+                  ? toCurrency(posHdrByTrans[0].TAX3)
+                  : posHdrByTrans[0].TAX4 !== 0
+                  ? toCurrency(posHdrByTrans[0].TAX4)
+                  : posHdrByTrans[0].TAX5 !== 0
+                  ? toCurrency(posHdrByTrans[0].TAX5)
+                  : ''
+                : ''}
+            </Text>
           </View>
-          <Text>
-            ----------------------------------------------------------
-          </Text>
+          <View
+            style={{
+              borderStyle: 'dotted',
+              borderWidth: 1,
+              borderRadius: 1,
+              margin: 10,
+            }}
+          />
           <View
             style={{
               paddingHorizontal: 20,
@@ -312,7 +372,7 @@ export const Payment = ({navigation, route}) => {
             }}>
             <Text style={{color: COLORS.black, fontWeight: 'bold'}}>TOTAL</Text>
             <Text style={{color: COLORS.black, fontWeight: 'bold'}}>
-              135.300 VND
+              {posHdrByTrans ? toCurrency(posHdrByTrans[0].FINALTOTAL) : ''}
             </Text>
           </View>
 
@@ -325,7 +385,7 @@ export const Payment = ({navigation, route}) => {
               justifyContent: 'space-between',
             }}>
             <Text style={{color: COLORS.black}}>Cash</Text>
-            <Text style={{color: COLORS.black}}>135.300 VND</Text>
+            <Text style={{color: COLORS.black}}>{toCurrency(inputValue)}</Text>
           </View>
 
           <View
@@ -349,7 +409,9 @@ export const Payment = ({navigation, route}) => {
             <Text style={{color: COLORS.white, fontWeight: 'bold'}}>
               Amount Due
             </Text>
-            <Text style={{color: COLORS.white, fontWeight: 'bold'}}>0 VND</Text>
+            <Text style={{color: COLORS.white, fontWeight: 'bold'}}>
+              {toCurrency(amountLeft)}
+            </Text>
           </View>
 
           {/* show the amount value from the input keyboard  */}
@@ -361,7 +423,7 @@ export const Payment = ({navigation, route}) => {
             }}>
             <Text style={{color: COLORS.white, fontWeight: 'bold'}} />
             <Text style={{color: COLORS.inputValue, fontWeight: 'bold'}}>
-              {inputValue} VND
+              {toCurrency(inputValue)}
             </Text>
           </View>
 

@@ -1,5 +1,5 @@
 import {apiQROrderGET} from '../../helpers/fetch';
 
-export const usePosDetail = async params => {
+export const fetchPosDetail = async params => {
   return await apiQROrderGET('/api/PosDetail', params);
 };

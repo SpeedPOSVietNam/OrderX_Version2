@@ -6,7 +6,7 @@ import {SCREENS} from './SCREENS';
 
 export const SuccessFul = ({navigation}) => {
   setTimeout(() => {
-    navigation.navigate(SCREENS.Main);
+    navigation.navigate(SCREENS.TableListMain);
   }, 2000);
 
   return (

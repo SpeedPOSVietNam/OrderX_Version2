@@ -28,22 +28,16 @@ export const AppNavigator = () => {
           backgroundColor: COLORS.secondary,
           animationEnabled: true,
         }}>
-        {preLoading ? (
-          <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
-        ) : (
-          <>
-            <Stack.Screen name="Counter" component={Counter} />
-            <Stack.Screen name="LoginScreen" component={LoginScreen} />
-            <Stack.Screen name="SettingScreen" component={SettingScreen} />
-            <Stack.Screen name="EnterWaiter" component={EnterWaiter} />
-            <Stack.Screen name="EnterPassword" component={EnterPassword} />
-            <Stack.Screen name="TableListMain" component={TableListMain} />
-            <Stack.Screen name="SuccessFul" component={SuccessFul} />
-            <Stack.Screen name="Fail" component={Fail} />
-            <Stack.Screen name="Payment" component={Payment} />
-            <Stack.Screen name="OrderHistory" component={OrderHistory} />
-          </>
-        )}
+        <Stack.Screen name="Counter" component={Counter} />
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="SettingScreen" component={SettingScreen} />
+        <Stack.Screen name="EnterWaiter" component={EnterWaiter} />
+        <Stack.Screen name="EnterPassword" component={EnterPassword} />
+        <Stack.Screen name="TableListMain" component={TableListMain} />
+        <Stack.Screen name="SuccessFul" component={SuccessFul} />
+        <Stack.Screen name="Fail" component={Fail} />
+        <Stack.Screen name="Payment" component={Payment} />
+        <Stack.Screen name="OrderHistory" component={OrderHistory} />
       </Stack.Navigator>
     </NavigationContainer>
   );
