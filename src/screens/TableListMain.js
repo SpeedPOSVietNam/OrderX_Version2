@@ -54,9 +54,9 @@ export const TableListMain = ({navigation}) => {
     }
     return finalData;
   };
+  // console.log('fetch waiter id', getWaiterID().EmpNum);
+  // console.log('fetch duplicate TRANSACT len', duplicateTransact.length);
 
-  console.log('fetch duplicate TRANSACT len', duplicateTransact.length);
-  // console.log('fetch waiter id ', getWaiterID());
   useEffect(() => {
     setDuplicateTransact([]);
     FetchTableData();
@@ -91,7 +91,7 @@ export const TableListMain = ({navigation}) => {
         onPress={() => {
           if (
             item.colorStatus === COLORS.TableStatusGreen ||
-            item.WHOSTART == getWaiterID()
+            item.WHOSTART == getWaiterID().EmpNum
           ) {
             navigation.navigate(SCREENS.Payment, {
               TableNum: item.TableNum,
@@ -100,7 +100,7 @@ export const TableListMain = ({navigation}) => {
             });
           } else if (item.WHOSTART == null) {
             Alert.alert('ERROR', 'You can not pay for empty table.');
-          } else if (item.WHOSTART && item.WHOSTART !== getWaiterID()) {
+          } else if (item.WHOSTART && item.WHOSTART !== getWaiterID().EmpNum) {
             Alert.alert('ERROR', 'It belongs to other waiter.');
           }
         }}
@@ -108,9 +108,9 @@ export const TableListMain = ({navigation}) => {
           width: 300,
           height: 60,
           backgroundColor:
-            item.WHOSTART == getWaiterID()
+            item.WHOSTART == getWaiterID().EmpNum
               ? COLORS.TableStatusRed
-              : item.WHOSTART && item.WHOSTART !== getWaiterID()
+              : item.WHOSTART && item.WHOSTART !== getWaiterID().EmpNum
               ? COLORS.TableStatusYellow
               : item.WHOSTART == null
               ? COLORS.TableStatusBlue
@@ -148,9 +148,9 @@ export const TableListMain = ({navigation}) => {
               fontWeight: 'bold',
               fontSize: SIZES.h4,
             }}>
-            {item.WHOSTART == getWaiterID()
+            {item.WHOSTART == getWaiterID().EmpNum
               ? 'Occupied'
-              : item.WHOSTART && item.WHOSTART !== getWaiterID()
+              : item.WHOSTART && item.WHOSTART !== getWaiterID().EmpNum
               ? 'Serving'
               : item.WHOSTART == null
               ? 'Empty'

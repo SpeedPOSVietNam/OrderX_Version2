@@ -19,6 +19,9 @@ import {HOOK_PAYMENT_METHOD} from '../hooks/react-query/usePaymentMethod';
 import {fetchPostHeader, fetchPosDetail} from '../hooks';
 import {SCREENS} from './SCREENS';
 import {roundDecimal, toCurrency} from '../helpers/utils';
+import {prepareBillForPrinter} from '../helpers/printFormat';
+import {paxHelper} from '../helpers/paxHelper';
+import {getWaiterID} from '../store';
 
 export const Payment = ({navigation, route}) => {
   const {TableNum, TRANSACT, TransactArray} = route.params;
@@ -225,9 +228,14 @@ export const Payment = ({navigation, route}) => {
         setAmountLeft(amountLeft - Number(inputValue));
       }
     };
+
     useEffect(() => {
+      // console.log(
+      //   'amount left',
+      //   allPosDetail.map(_ => console.log(_.ApplyTAX)),
+      // );
       if (amountLeft == 0) {
-        console.log('SUCCESSFUL');
+        printReceipt();
         navigation.navigate(SCREENS.SuccessFul);
       }
     }, [amountLeft]);
@@ -265,13 +273,88 @@ export const Payment = ({navigation, route}) => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
 
-  //   const tableServeBill = useMemo(
-  //     () =>
-  //       tableServeBillQry.data?.pages
-  //         .flat()
-  //         .find(_ => _.TableServeBillID === tableServeBillId) || null,
-  //     [tableServeBillId, tableServeBillQry],
-  //   );
+  const printReceipt = () => {
+    let isSuccess = false;
+    let printErrorMsg = '';
+
+    //#region Print Content Preparation
+    const items = allPosDetail
+      // .filter((_) => _.UnitPrice > 0)
+      .map(_ => ({
+        qty: _.QUAN,
+        name: _.Descript,
+        unitPrice: _.OrigCostEach,
+        totalPrice: _.QUAN * _.OrigCostEach,
+        calcMode: amountLeft,
+      }));
+    const printContent = prepareBillForPrinter({
+      venueName: 'SpeedDemo',
+      venueAddress: 'SpeedDemo',
+      tableName: JSON.stringify(TableNum),
+      billId: selectedTrans,
+      waiterName: getWaiterID().EmpName + getWaiterID().EmpLastName,
+      numOfCust: 0,
+      items: items,
+      netTotal: 0,
+      finalTotal: 0,
+      taxes: [{VAT: 0}],
+      payments: paymentType,
+      referenceCode: 0,
+    });
+
+    //#endregion
+
+    //#region Perform Print
+
+    const printModules = [
+      // {
+      //   name: 'INGENICO',
+      //   printAvailabilityCheckFunc: ingenicoHelper.canPrint,
+      //   printReadyCheckFunc: null,
+      //   printFunc: ingenicoHelper.printBill,
+      // },
+      {
+        name: 'PAX',
+        printAvailabilityCheckFunc: paxHelper.printerIsAvailable,
+        printReadyCheckFunc: paxHelper.printerIsReady,
+        printFunc: paxHelper.printerPrint,
+      },
+    ];
+
+    for (let i = 0; i < printModules.length; i++) {
+      const printModule = printModules[i];
+
+      try {
+        // Validate 1: printAvailabilityCheckFunc
+        const validateRes = printModule.printAvailabilityCheckFunc();
+        printErrorMsg = ''; // passed => Is certain Printer is available
+
+        // Validate 2: printReadyCheckFunc (if exists)
+        if (printModule.printReadyCheckFunc) {
+          try {
+            printModule.printReadyCheckFunc(validateRes);
+          } catch (e2) {
+            printErrorMsg = e2.message;
+            break;
+          }
+        }
+
+        printModule.printFunc(printContent);
+        console.log('Print success');
+        isSuccess = true;
+        break;
+      } catch (e) {
+        printErrorMsg += `<${printModule.name}>: ${e.message}\n`;
+      }
+    }
+
+    //#endregion
+
+    return {
+      isSuccess,
+      errorMsg: printErrorMsg,
+    };
+  };
 
   return (
     <View
@@ -317,7 +400,7 @@ export const Payment = ({navigation, route}) => {
         <View
           style={{
             flex: 0.8,
-            height: 100,
+            height: 50,
           }}>
           <RenderDulplicateTransact />
 

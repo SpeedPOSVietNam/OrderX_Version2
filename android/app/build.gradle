@@ -160,6 +160,7 @@ android {
             }
         }
     }
+    
 
     if (isNewArchitectureEnabled()) {
         // We configure the NDK build only if you decide to opt-in for the New Architecture.
@@ -207,7 +208,7 @@ android {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include (*reactNativeArchitectures())
+            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
     signingConfigs {
@@ -277,6 +278,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+     implementation files('libs/pax/NeptuneLiteApi_V3.29.00_20220507.jar')
+
 }
 
 if (isNewArchitectureEnabled()) {

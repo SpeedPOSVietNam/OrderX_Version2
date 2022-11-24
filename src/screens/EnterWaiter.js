@@ -89,7 +89,7 @@ export const EnterWaiter = ({navigation}) => {
       // });
 
       // console.log('Check waiter device login: ', result);
-      setWaiterID(waiter[0].EmpNum);
+      setWaiterID(waiter[0]);
       navigation.navigate(SCREENS.TableListMain);
     }
   };
