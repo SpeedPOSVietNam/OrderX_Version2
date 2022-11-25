@@ -22,7 +22,7 @@ import {roundDecimal, toCurrency} from '../helpers/utils';
 import {prepareBillForPrinter} from '../helpers/printFormat';
 import {paxHelper} from '../helpers/paxHelper';
 import {getWaiterID} from '../store';
-
+import {sharePosHelper} from '../helpers/sharePosHelper';
 export const Payment = ({navigation, route}) => {
   const {TableNum, TRANSACT, TransactArray} = route.params;
   const [allPosDetail, setAllPosDetail] = useState();
@@ -31,6 +31,7 @@ export const Payment = ({navigation, route}) => {
   const [posHdrByTrans, setPosHdrByTrans] = useState();
   const [paymentType, setPaymentType] = useState();
   const [amountLeft, setAmountLeft] = useState();
+  const [allPaymentMethod, setAllPaymentMethod] = useState();
 
   const posDetail = fetchPosDetail({
     Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
@@ -40,6 +41,8 @@ export const Payment = ({navigation, route}) => {
     Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
   });
 
+  const posPaymentMethod = HOOK_PAYMENT_METHOD({});
+
   const getPosDetail = () => {
     posDetail.then(res => setAllPosDetail(res)).catch(err => console.log(err));
   };
@@ -47,9 +50,17 @@ export const Payment = ({navigation, route}) => {
     posHeader.then(res => setPosHdrByTrans(res)).catch(err => console.log(err));
   };
 
+  const getPaymentMethod = () => {
+    posPaymentMethod
+      .then(res => setAllPaymentMethod(res))
+      .catch(err => console.log(err));
+  };
+
+  // console.log('allPaymentMethod', allPaymentMethod);
   useEffect(() => {
     getPosDetail();
     getPosHeader();
+    getPaymentMethod();
   }, [selectedTrans, TRANSACT]);
 
   const BillPayment = () => {
@@ -195,23 +206,25 @@ export const Payment = ({navigation, route}) => {
           alignItems: 'center',
         }}
         onPress={onPress}>
-        <Image source={item.icon} />
-        <Text style={{color: textColor, fontWeight: 'bold'}}>{item.name}</Text>
+        {/* <Image source={item.icon} /> */}
+        <Text style={{color: textColor, fontWeight: 'bold'}}>
+          {item.Descript}
+        </Text>
       </TouchableOpacity>
     );
 
     const renderItem = ({item}) => {
       const backgroundColor =
-        item.id == selectedId ? COLORS.title : COLORS.white;
-      const color = item.id == selectedId ? COLORS.white : COLORS.title;
+        item.MethodNum == selectedId ? COLORS.title : COLORS.white;
+      const color = item.MethodNum == selectedId ? COLORS.white : COLORS.title;
 
       return (
         <Item
           item={item}
           onPress={() => {
-            setSelectedId(item.id),
+            setSelectedId(item.MethodNum),
               Alert.alert('Confirm your choice?'),
-              setPaymentType(item.name);
+              setPaymentType(item.MethodNum);
           }}
           backgroundColor={backgroundColor}
           textColor={color}
@@ -239,10 +252,18 @@ export const Payment = ({navigation, route}) => {
         navigation.navigate(SCREENS.SuccessFul);
       }
     }, [amountLeft]);
+    useEffect(() => {
+      handleMiniPosPay({
+        amount: inputValue,
+        addInfo: [],
+        payMethodID: 1234,
+        payTransactionID: 1234,
+      });
+    }, [paymentType === 1010]);
     return (
       <View>
         <FlatList
-          data={HOOK_PAYMENT_METHOD}
+          data={allPaymentMethod}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           extraData={selectedId}
@@ -272,6 +293,36 @@ export const Payment = ({navigation, route}) => {
 
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
+  const handleMiniPosPay = async ({amount, addInfo, payTransactionID}) => {
+    let result = await sharePosHelper.makePayment({
+      amount,
+      addInfo,
+      merchantTransId: payTransactionID,
+    });
+    result = JSON.parse(result);
+
+    if (result.Code === '200') {
+      console.log('Result of Card payment:', JSON.stringify(result));
+      // const ipnResult = await tableServePayBillMiniPosIPN({
+      //   clientGUID,
+      //   payMethodID,
+      //   bodyData: {
+      //     // MerchantID: result.Response.merchantId,
+      //     // TerminalID: result.Response.terminalId,
+      //     // MerchantTransactionID: result.merchantTransId,
+      //     // TransactionType,
+      //     // Status, // - Pending/Success/Cancel
+      //     // Currency,
+      //     // Amount,
+      //     // BankCode,
+      //     // invoiceNo,
+      //     // RefNo,
+      //     PayTransactionID: payTransactionID,
+      //     ResultContent: JSON.stringify(result),
+      //   },
+      // });
+    }
+  };
 
   const printReceipt = () => {
     let isSuccess = false;

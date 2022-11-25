@@ -12,7 +12,7 @@ const notFound = () => alert('Ingenico module not found.');
 //   startEMV: ingenicoStartEMV,
 // } = IngenicoModule;
 
-// const {callSharePos: shareposCall} = SharePosModule;
+const {callSharePos: shareposCall} = SharePosModule;
 console.log('PaxModule', PaxModule);
 
 const {
@@ -24,7 +24,7 @@ const {
 
 export {
   // sharepos
-  // shareposCall,
+  shareposCall,
   // pax
   paxPrinterPrint,
   paxPrinterIsAvailable,

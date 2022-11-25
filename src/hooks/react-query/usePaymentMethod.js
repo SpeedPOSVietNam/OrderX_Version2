@@ -1,6 +1,6 @@
 import icons from '../../constants/icons';
+import {apiQROrderGET} from '../../helpers/fetch';
 
-export const HOOK_PAYMENT_METHOD = [
-  {id: '1', name: 'CARD', icon: icons.card},
-  {id: '2', name: 'CASH', icon: icons.cash},
-];
+export const HOOK_PAYMENT_METHOD = async () => {
+  return await apiQROrderGET('/api/PaymentMethod');
+};
