@@ -32,7 +32,7 @@ export const useStore = create(
         }),
         {
           getStorage: () => AsyncStorage,
-          name: 'speed-mobile-order',
+          name: 'orderX_V2',
           // whitelist: ['firstRun', 'setting'], // old zustand
           // new version of zustand: https://github.com/pmndrs/zustand/wiki/Persisting-the-store's-data
           partialize: state => ({
@@ -61,6 +61,8 @@ export const getClientID = () => useStore.getState().auth.clientID;
 export const getVenueGUID = () => useStore.getState().auth.venueGUID;
 export const getVenueID = () => useStore.getState().auth.venueID;
 export const getWaiterID = () => useStore.getState().auth.waiterID;
+export const getPosHeader = () => useStore.getState().auth.posHeader;
+export const getTableData = () => useStore.getState().auth.tableData;
 export const getTableID = () => useStore.getState().cache.currentTableID;
 export const setGlobalLoading = (o, i) =>
   useStore.getState().uiActions.setGlobalLoading(o, i);
@@ -68,4 +70,5 @@ export const getAppMode = () => useStore.getState().setting.appMode;
 export const setAppMode = mode =>
   useStore.getState().settingActions.setAppMode(mode);
 export const addAlert = alert => useStore.getState().uiActions.addAlert(alert);
+
 //#endregion

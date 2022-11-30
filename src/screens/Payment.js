@@ -23,6 +23,11 @@ import {prepareBillForPrinter} from '../helpers/printFormat';
 import {paxHelper} from '../helpers/paxHelper';
 import {getWaiterID} from '../store';
 import {sharePosHelper} from '../helpers/sharePosHelper';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+
 export const Payment = ({navigation, route}) => {
   const {TableNum, TRANSACT, TransactArray} = route.params;
   const [allPosDetail, setAllPosDetail] = useState();
@@ -41,7 +46,7 @@ export const Payment = ({navigation, route}) => {
     Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
   });
 
-  const posPaymentMethod = HOOK_PAYMENT_METHOD({});
+  //const posPaymentMethod = HOOK_PAYMENT_METHOD({});
 
   const getPosDetail = () => {
     posDetail.then(res => setAllPosDetail(res)).catch(err => console.log(err));
@@ -50,28 +55,28 @@ export const Payment = ({navigation, route}) => {
     posHeader.then(res => setPosHdrByTrans(res)).catch(err => console.log(err));
   };
 
-  const getPaymentMethod = () => {
-    posPaymentMethod
-      .then(res => setAllPaymentMethod(res))
-      .catch(err => console.log(err));
-  };
+  // const getPaymentMethod = () => {
+  //   posPaymentMethod
+  //     .then(res => setAllPaymentMethod(res))
+  //     .catch(err => console.log(err));
+  // };
 
   // console.log('allPaymentMethod', allPaymentMethod);
   useEffect(() => {
     getPosDetail();
     getPosHeader();
-    getPaymentMethod();
-  }, [selectedTrans, TRANSACT]);
+    //getPaymentMethod();
+  }, [selectedTrans]);
 
   const BillPayment = () => {
     const renderItem = ({item}) => (
       <View
         style={{
-          paddingHorizontal: 20,
           flexDirection: 'row',
+          alignItems: 'center',
           justifyContent: 'space-between',
           backgroundColor: COLORS.lightGray,
-          width: '99%',
+          width: wp('67%'),
         }}>
         <Text style={{color: COLORS.black}}>x{item.QUAN}</Text>
         <Text style={{color: COLORS.black}}>{item.Descript}</Text>
@@ -175,7 +180,8 @@ export const Payment = ({navigation, route}) => {
                 style={{
                   ...STYLES.cardShadow,
                   flex: 1,
-                  maxWidth: '100%',
+                  maxWidth: hp('20%'),
+                  maxHeight: wp('20%'),
                   aspectRatio: 1,
                   borderRadius: SIZES.radius3,
                   backgroundColor: COLORS.white,
@@ -206,7 +212,7 @@ export const Payment = ({navigation, route}) => {
           alignItems: 'center',
         }}
         onPress={onPress}>
-        {/* <Image source={item.icon} /> */}
+        <Image source={item.icon} />
         <Text style={{color: textColor, fontWeight: 'bold'}}>
           {item.Descript}
         </Text>
@@ -263,7 +269,7 @@ export const Payment = ({navigation, route}) => {
     return (
       <View>
         <FlatList
-          data={allPaymentMethod}
+          data={HOOK_PAYMENT_METHOD}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           extraData={selectedId}
@@ -450,12 +456,18 @@ export const Payment = ({navigation, route}) => {
         }}>
         <View
           style={{
-            flex: 0.8,
-            height: 50,
+            flex: 1,
           }}>
           <RenderDulplicateTransact />
-
-          <BillPayment />
+          <View
+            style={{
+              height: hp('15%'),
+              paddingHorizontal: 20,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <BillPayment />
+          </View>
           <View
             style={{
               paddingHorizontal: 20,
@@ -560,8 +572,14 @@ export const Payment = ({navigation, route}) => {
               {toCurrency(inputValue)}
             </Text>
           </View>
-
-          <RenderKeyboard />
+          <View
+            style={{
+              paddingHorizontal: 20,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <RenderKeyboard />
+          </View>
         </View>
         <View
           style={{

@@ -18,6 +18,7 @@ import {Counter} from '../screens/Counter';
 const Stack = createNativeStackNavigator();
 
 export const AppNavigator = () => {
+  const editTableMap = useStore(uiSelectors.editTableMap);
   const preLoading = useStore(uiSelectors.preLoading);
   return (
     <NavigationContainer>
@@ -28,12 +29,14 @@ export const AppNavigator = () => {
           backgroundColor: COLORS.secondary,
           animationEnabled: true,
         }}>
+        <Stack.Screen name="TableListMain" component={TableListMain} />
+        <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="Counter" component={Counter} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SettingScreen" component={SettingScreen} />
         <Stack.Screen name="EnterWaiter" component={EnterWaiter} />
         <Stack.Screen name="EnterPassword" component={EnterPassword} />
-        <Stack.Screen name="TableListMain" component={TableListMain} />
+
         <Stack.Screen name="SuccessFul" component={SuccessFul} />
         <Stack.Screen name="Fail" component={Fail} />
         <Stack.Screen name="Payment" component={Payment} />

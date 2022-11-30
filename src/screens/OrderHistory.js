@@ -76,11 +76,8 @@ export const OrderHistory = ({navigation}) => {
       .catch(err => console.log(err));
   };
 
-  useEffect(() => {
-    fetchTransPay();
-    fetchTransHeader();
+  const listRenderCondition = () => {
     if (transHeaderData !== undefined && transPayData !== undefined) {
-    
       for (let i = 0; i < transHeaderData.length; i++) {
         for (let x = 0; x < transPayData.length; x++) {
           if (transHeaderData[i].Transact === transPayData[x].Transact) {
@@ -101,7 +98,18 @@ export const OrderHistory = ({navigation}) => {
         }
       }
     }
+  };
+
+  useEffect(() => {
+    fetchTransPay();
+    fetchTransHeader();
   }, [finalFromDate, finalToDate]);
+
+  useEffect(() => {
+    var timerID = setInterval(() => listRenderCondition(), 100);
+
+    return () => clearInterval(timerID);
+  });
 
   const showFromDatePicker = () => {
     setFromDatePickerVisibility(true);

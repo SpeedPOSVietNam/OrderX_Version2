@@ -23,16 +23,17 @@ export const TableListMain = ({navigation}) => {
   const [TableNo, setTableNo] = useState('');
   const [duplicateTransact, setDuplicateTransact] = useState([]);
 
-  const allTable = useTable({});
-  const posHeader = fetchPostHeader({});
-
   const selectedTable = useRelativeTableNo({
     queryTbNum: TableNo,
   });
 
   const FetchTableData = () => {
-    allTable.then(res => setAllTableData(res)).catch(err => console.log(err));
-    posHeader.then(res => setAllPosHeader(res)).catch(err => console.log(err));
+    useTable({})
+      .then(res => setAllTableData(res))
+      .catch(err => console.log(err));
+    fetchPostHeader({})
+      .then(res => setAllPosHeader(res))
+      .catch(err => console.log(err));
 
     if (allTableData !== undefined && allPosHeader !== undefined) {
       for (let i = 0; i < allTableData.length; i++) {
@@ -40,13 +41,10 @@ export const TableListMain = ({navigation}) => {
           if (allTableData[i].TableNum === allPosHeader[x].TABLENUM) {
             (allTableData[i].WHOSTART = allPosHeader[x].WHOSTART),
               (allTableData[i].TRANSACT = allPosHeader[x].TRANSACT),
-              setDuplicateTransact(
-                pre => [
-                  ...pre,
-                  [allPosHeader[x].TABLENUM, allPosHeader[x].TRANSACT],
-                ],
-                // duplicateTransact.push(allPosHeader[x].TRANSACT),
-              );
+              setDuplicateTransact(pre => [
+                ...pre,
+                [allPosHeader[x].TABLENUM, allPosHeader[x].TRANSACT],
+              ]);
             setFinalData(allTableData);
           }
         }
@@ -54,8 +52,6 @@ export const TableListMain = ({navigation}) => {
     }
     return finalData;
   };
-  // console.log('fetch waiter id', getWaiterID().EmpNum);
-  // console.log('fetch duplicate TRANSACT len', duplicateTransact.length);
 
   useEffect(() => {
     setDuplicateTransact([]);

@@ -5,6 +5,8 @@ export const createAuthSlice = (set, get) => ({
     venueGUID: null,
     venueID: null,
     waiterID: null,
+    tableData: null,
+    posHeader: null,
   },
   authActions: {
     setClientGUID: clientGUID =>
@@ -39,6 +41,14 @@ export const createAuthSlice = (set, get) => ({
         state.auth.venueGUID = null;
         state.auth.waiterID = null;
       }),
+    setTableData: tableData =>
+      set(state => {
+        state.auth.tableData = tableData;
+      }),
+    setPosHeader: posHeader =>
+      set(state => {
+        state.auth.posHeader = posHeader;
+      }),
   },
 });
 
@@ -48,6 +58,8 @@ export const authSelectors = {
   venueGUID: state => state.auth.venueGUID,
   venueID: state => state.auth.venueID,
   waiterID: state => state.auth.waiterID,
+  tableData: state => state.auth.tableData,
+  posHeader: state => state.auth.posHeader,
   setClientGUID: state => state.authActions.setClientGUID,
   setClientID: state => state.authActions.setClientID,
   setVenueGUID: state => state.authActions.setVenueGUID,
@@ -55,4 +67,6 @@ export const authSelectors = {
   setWaiterID: state => state.authActions.setWaiterID,
   logoutWaiter: state => state.authActions.logoutWaiter,
   leaveClient: state => state.authActions.leaveClient,
+  setTableData: state => state.authActions.setTableData,
+  setPosHeader: state => state.authActions.setPosHeader,
 };
