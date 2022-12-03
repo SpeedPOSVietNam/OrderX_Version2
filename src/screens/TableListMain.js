@@ -50,7 +50,6 @@ export const TableListMain = ({navigation}) => {
         }
       }
     }
-    return finalData;
   };
 
   useEffect(() => {
@@ -159,7 +158,7 @@ export const TableListMain = ({navigation}) => {
       <FlatList
         data={finalData}
         renderItem={renderItem}
-        keyExtractor={item => item.TableNum}
+        keyExtractor={(item, index) => index}
         // refreshControl={<RefreshControl
         //   refreshing={refreshing}
         //   onRefresh={onRefresh}

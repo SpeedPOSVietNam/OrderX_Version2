@@ -1,4 +1,4 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, {useState, useMemo, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import icons from '../constants/icons';
+import {MyButton} from '../components';
+import icons, {search} from '../constants/icons';
 import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
-import {HOOK_ORDER_CONFIRM_HISTORY} from '../hooks/react-query/useOrderConfirmHistory';
 import {
   PasswordInputWithRevealButton,
   AppVersion,
@@ -51,6 +51,13 @@ export const OrderHistory = ({navigation}) => {
   const [transPayData, setTransPayData] = useState();
   const [transHeaderData, setTransHeaderData] = useState();
   const [finalData, setFinalData] = useState();
+  const prevFinalDataRef = useRef();
+
+  useEffect(() => {
+    //assign the ref's current value to the count Hook
+    prevFinalDataRef.current = finalData;
+  }, [finalData]); //run this code when the value of count changes
+
   const useTransaction = useTransactionPayment({
     FromDate: finalFromDate,
     EndDate: finalToDate,
@@ -103,13 +110,8 @@ export const OrderHistory = ({navigation}) => {
   useEffect(() => {
     fetchTransPay();
     fetchTransHeader();
+    // listRenderCondition();
   }, [finalFromDate, finalToDate]);
-
-  useEffect(() => {
-    var timerID = setInterval(() => listRenderCondition(), 100);
-
-    return () => clearInterval(timerID);
-  });
 
   const showFromDatePicker = () => {
     setFromDatePickerVisibility(true);
@@ -123,15 +125,44 @@ export const OrderHistory = ({navigation}) => {
   };
   const handleFromDateConfirm = date => {
     const format = 'YYYY-MM-DD';
-    date = moment(date).format(format);
-    setFromDate(date);
-    hideDatePicker();
+    // console.log('YEAR fetch', moment(date).format('YYYY'));
+    if (finalToDate !== undefined) {
+      if (moment(date).format(format) > finalToDate) {
+        Alert.alert('From Date cannot be exceed than To date');
+        setFromDate();
+        setFinalData();
+        hideDatePicker();
+      } else {
+        date = moment(date).format(format);
+        setFromDate(date);
+        hideDatePicker();
+      }
+    }
+    if (finalToDate == undefined) {
+      date = moment(date).format(format);
+      setFromDate(date);
+      hideDatePicker();
+    }
   };
   const handleToDateConfirm = date => {
     const format = 'YYYY-MM-DD';
-    date = moment(date).format(format);
-    setToDate(date);
-    hideDatePicker();
+    if (finalFromDate !== undefined) {
+      if (moment(date).format(format) < finalFromDate) {
+        Alert.alert('To Date cannot be deceed than From date');
+        setToDate();
+        setFinalData();
+        hideDatePicker();
+      } else {
+        date = moment(date).format(format);
+        setToDate(date);
+        hideDatePicker();
+      }
+    }
+    if (finalFromDate == undefined) {
+      date = moment(date).format(format);
+      setToDate(date);
+      hideDatePicker();
+    }
   };
   const RenderOrderHistory = () => {
     const RenderItem = ({item}) => (
@@ -243,9 +274,9 @@ export const OrderHistory = ({navigation}) => {
                   : ''}
               </Text>
               <Text>
-                {item.Tender1 == 'CREDIT CARD'
+                {item.Descript1 == 'CREDIT CARD'
                   ? toCurrency(item.Tender1)
-                  : item.Tender1 == 'CASH'
+                  : item.Descript1 == 'CASH'
                   ? toCurrency(item.Tender1)
                   : ''}
               </Text>
@@ -376,7 +407,28 @@ export const OrderHistory = ({navigation}) => {
           />
         </View>
       </View>
-
+      <View
+        style={{
+          justifyContent: 'flex-end',
+          alignSelf: 'center',
+        }}>
+        <MyButton
+          iconStyle={{tintColor: COLORS.white}}
+          title={'Search'}
+          titleStyle={{
+            ...FONTS.h4,
+            color: COLORS.white,
+            marginLeft: SIZES.padding,
+            marginRight: SIZES.padding,
+          }}
+          containerStyle={{
+            backgroundColor: COLORS.title,
+            borderRadius: SIZES.radius,
+            marginBottom: SIZES.padding2,
+          }}
+          onPress={() => listRenderCondition()}
+        />
+      </View>
       <View
         style={{
           flex: 0.9,

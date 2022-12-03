@@ -7,6 +7,7 @@ export const createUISlice = (set, get) => ({
     editTableMap: false,
     openingTable: false,
     preLoading: true,
+    modalAlert: false,
     alerts: [
       // {
       //     title: 'Alert 1',
@@ -67,6 +68,10 @@ export const createUISlice = (set, get) => ({
       set(state => {
         state.ui.alerts = state.ui.alerts.filter(a => a.guid !== alert.guid);
       }),
+    addModalAlert: modalAlert =>
+      set(state => {
+        state.ui.modalAlert = modalAlert;
+      }),
   },
 });
 
@@ -84,4 +89,5 @@ export const uiSelectors = {
   alerts: state => state.ui.alerts,
   addAlert: state => state.uiActions.addAlert,
   removeAlert: state => state.uiActions.removeAlert,
+  addModalAlert: state => state.uiActions.addModalAlert,
 };

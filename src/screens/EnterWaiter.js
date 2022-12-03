@@ -91,7 +91,7 @@ export const EnterWaiter = ({navigation}) => {
       // console.log('Check waiter device login: ', result);
       setWaiterID(waiter[0]);
       // setPreLoading(true);
-      navigation.navigate(SCREENS.LoadingScreen);
+      navigation.navigate(SCREENS.TableListMain);
     }
   };
 

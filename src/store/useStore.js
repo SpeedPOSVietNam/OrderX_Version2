@@ -70,5 +70,5 @@ export const getAppMode = () => useStore.getState().setting.appMode;
 export const setAppMode = mode =>
   useStore.getState().settingActions.setAppMode(mode);
 export const addAlert = alert => useStore.getState().uiActions.addAlert(alert);
-
+export const getModalAlert = () => useStore.getState().ui.modalAlert;
 //#endregion

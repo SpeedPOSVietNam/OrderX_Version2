@@ -30,7 +30,6 @@ export const AppNavigator = () => {
           animationEnabled: true,
         }}>
         <Stack.Screen name="TableListMain" component={TableListMain} />
-        <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="Counter" component={Counter} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="SettingScreen" component={SettingScreen} />
