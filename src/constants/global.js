@@ -56,6 +56,7 @@ export const EDIT_MAP_PASSWORD = 'SpeedPOSMap';
 
 export const SHAREPOS_PAYMENT_SECRETKEY = '1111111111111111'; // for testing
 
+//export const SHAREPOS_PAYMENT_SECRETKEY = '';
 //#region ENUMS
 
 // Map theo DefinedApiResult trên SpeedCoreWeb

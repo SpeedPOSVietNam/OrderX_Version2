@@ -141,7 +141,7 @@ export const base64Icon = base64Data => 'data:image/png;base64,' + base64Data;
 // https://stackoverflow.com/a/14428340
 export const toCurrency = (num = 0, separator = ',', withEnd = true) =>
   num?.toString()?.replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, '$1' + separator) +
-  (withEnd ? ' đ' : '');
+  (withEnd ? ' VND' : '');
 
 // https://stackoverflow.com/a/11832950/11898496
 // export const round2Decimals = (num) => Math.round((num + Number.EPSILON) * 100) / 100;

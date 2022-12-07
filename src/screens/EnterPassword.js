@@ -229,6 +229,7 @@ export const EnterPassword = ({route, navigation}) => {
           }}>
           Enter PASSWORD
         </Text>
+
         <PasswordInputWithRevealButton
           paramIsReveal={false}
           RighImageSrc1={icons.eye_close}

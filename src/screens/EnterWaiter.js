@@ -27,6 +27,8 @@ import {
 import {authSelectors, useStore, uiSelectors} from '../store';
 import {SCREENS} from './SCREENS';
 import {base64Icon} from '../helpers/utils';
+import {SettingScreen} from './SettingScreen';
+import {SharePosTestScreen} from './test/SharePosTestScreen';
 
 export const EnterWaiter = ({navigation}) => {
   const clientGUID = useStore(authSelectors.clientGUID);
@@ -151,15 +153,18 @@ export const EnterWaiter = ({navigation}) => {
           justifyContent: 'space-evenly',
           alignItems: 'center',
         }}>
-        <Text
-          style={{
-            ...FONTS.h3,
-            color: COLORS.title,
-            textAlign: 'center',
-            fontWeight: 'bold',
-          }}>
-          Enter PASSWORD
-        </Text>
+        <TouchableOpacity
+          onLongPress={() => navigation.navigate(SCREENS.SettingScreen)}>
+          <Text
+            style={{
+              ...FONTS.h3,
+              color: COLORS.title,
+              textAlign: 'center',
+              fontWeight: 'bold',
+            }}>
+            Enter PASSWORD
+          </Text>
+        </TouchableOpacity>
         <PasswordInputWithRevealButton
           paramIsReveal={false}
           RighImageSrc1={icons.eye_close}
@@ -185,6 +190,7 @@ export const EnterWaiter = ({navigation}) => {
             marginBottom: SIZES.padding,
           }}
           onPress={checkPassword}
+          //onPress={() => navigation.navigate(SCREENS.SharePosTestScreen)}
         />
       </View>
 

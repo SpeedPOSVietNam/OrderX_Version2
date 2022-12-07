@@ -14,6 +14,7 @@ import {EnterWaiter} from '../screens/EnterWaiter';
 import {LoadingScreen} from '../screens/LoadingScreen';
 import {uiSelectors, useStore} from '../store';
 import {Counter} from '../screens/Counter';
+import {SharePosTestScreen} from '../screens/test/SharePosTestScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,7 +36,10 @@ export const AppNavigator = () => {
         <Stack.Screen name="SettingScreen" component={SettingScreen} />
         <Stack.Screen name="EnterWaiter" component={EnterWaiter} />
         <Stack.Screen name="EnterPassword" component={EnterPassword} />
-
+        <Stack.Screen
+          name="SharePosTestScreen"
+          component={SharePosTestScreen}
+        />
         <Stack.Screen name="SuccessFul" component={SuccessFul} />
         <Stack.Screen name="Fail" component={Fail} />
         <Stack.Screen name="Payment" component={Payment} />

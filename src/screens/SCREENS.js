@@ -10,4 +10,5 @@ export const SCREENS = {
   TableListMain: 'TableListMain',
   EnterWaiter: 'EnterWaiter',
   LoadingScreen: 'LoadingScreen',
+  SharePostTestScreen: 'SharePostTestScreen',
 };

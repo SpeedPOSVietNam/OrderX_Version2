@@ -13,11 +13,10 @@ import {
   Dimensions,
 } from 'react-native';
 import {MyButton} from '../components';
-import icons from '../constants/icons';
+import icons, {card} from '../constants/icons';
 import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
 import {HOOK_PAYMENT_METHOD} from '../hooks/react-query/usePaymentMethod';
 import {fetchPostHeader, fetchPosDetail} from '../hooks';
-import {SCREENS} from './SCREENS';
 import {roundDecimal, toCurrency} from '../helpers/utils';
 import {prepareBillForPrinter} from '../helpers/printFormat';
 import {paxHelper} from '../helpers/paxHelper';
@@ -28,6 +27,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {CustomAlert} from '../components';
+import {pad} from 'crypto-js';
 
 export const Payment = ({navigation, route}) => {
   const windowWidth = Dimensions.get('window').width;
@@ -38,15 +38,18 @@ export const Payment = ({navigation, route}) => {
   const [selectedTrans, setSlectedTrans] = useState();
   const [posHdrByTrans, setPosHdrByTrans] = useState();
   const [paymentType, setPaymentType] = useState();
-  // const [selectedId, setSelectedId] = useState(null);
   const [amountLeft, setAmountLeft] = useState();
-  const [cashCheck, setCashCheck] = useState(0);
-  const [cardCheck, setCardCheck] = useState(0);
-  // const [allPaymentMethod, setAllPaymentMethod] = useState();
+  const [change, setChange] = useState([
+    {
+      trans: '',
+      value: '',
+    },
+  ]);
+  const [cashCheck, setCashCheck] = useState([]);
+  const [cardCheck, setCardCheck] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [printReceiptCount, setPrintReceiptCount] = useState(0);
-
-  // const printReceiptCount = useRef(1);
+  const [paidTrans, setPaidTrans] = useState([]);
 
   const posDetail = fetchPosDetail({
     Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
@@ -71,14 +74,6 @@ export const Payment = ({navigation, route}) => {
   //     .catch(err => console.log(err));
   // };
 
-  // useEffect(() => {
-  //   if (paymentType == 'CASH') {
-  //     setCashCheck(amountLeft);
-  //   }
-  //   if (paymentType == 'CARD') {
-  //     setCardCheck(amountLeft);
-  //   }
-  // }, [amountLeft]);
   useEffect(() => {
     getPosDetail();
     getPosHeader();
@@ -90,16 +85,59 @@ export const Payment = ({navigation, route}) => {
       <View
         style={{
           flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: COLORS.lightGray,
-          width: wp('67%'),
+
+          fontFamily: 'Arial',
+          width: wp('70%'),
+          paddingTop: wp('1%'),
         }}>
-        <Text style={{color: COLORS.black}}>x{item.QUAN}</Text>
-        <Text style={{color: COLORS.black}}>{item.Descript}</Text>
-        <Text style={{color: COLORS.black}}>
-          {toCurrency(item.NetCostEach)}
-        </Text>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+            width: wp('12%'),
+          }}>
+          <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
+            x{item.QUAN}
+          </Text>
+          <Text
+            style={{
+              paddingLeft: wp('4%'),
+              paddingRight: wp('2%'),
+            }}>
+            -
+          </Text>
+        </View>
+        <View
+          style={{
+            fontFamily: 'Arial',
+            flexDirection: 'row',
+            paddingLeft: wp('2%'),
+            width: wp('30%'),
+          }}>
+          <Text
+            style={{
+              fontFamily: 'Arial',
+              color: COLORS.black,
+            }}>
+            {item.Descript}
+          </Text>
+        </View>
+        <View
+          style={{
+            fontFamily: 'Arial',
+            justifyContent: 'center',
+            width: hp('20%'),
+            paddingLeft: wp('3%'),
+          }}>
+          <Text
+            style={{
+              fontFamily: 'Arial',
+              color: COLORS.black,
+            }}>
+            {toCurrency(item.NetCostEach)}
+          </Text>
+        </View>
       </View>
     );
     return (
@@ -117,18 +155,20 @@ export const Payment = ({navigation, route}) => {
     const renderItem = ({item, index}) => (
       <TouchableOpacity
         style={{
-          width: SIZES.padding2 * 4.5,
-          height: 42,
+          width: wp('18%'),
+          height: hp('6%'),
           alignItems: 'center',
           justifyContent: 'center',
-          marginBottom: 2,
+          marginBottom: hp('1%'),
           backgroundColor: item == selectedTrans ? COLORS.title : '',
           borderColor: COLORS.title,
           borderWidth: 1,
-          borderRadius: 3,
-          marginLeft: 5,
+          borderRadius: 4,
+          marginRight: wp('1%'),
         }}
-        onPress={() => setSlectedTrans(item)}>
+        onPress={() => {
+          setSlectedTrans(item);
+        }}>
         <Text
           style={{
             ...FONTS.h2,
@@ -143,6 +183,7 @@ export const Payment = ({navigation, route}) => {
           }}>
           <Text
             style={{
+              fontFamily: 'Arial',
               textAlign: 'center',
               lineHeight: 15,
               marginBottom: 5,
@@ -171,7 +212,7 @@ export const Payment = ({navigation, route}) => {
       }
       setInputValue(inputValue + b.toString());
     } else if (b == '<') {
-      setInputValue(0);
+      setInputValue('');
     }
   };
 
@@ -179,7 +220,7 @@ export const Payment = ({navigation, route}) => {
     return (
       <View
         style={{
-          padding: SIZES.padding,
+          // padding: SIZES.padding,
           flexGrow: 1,
         }}>
         {[
@@ -190,19 +231,22 @@ export const Payment = ({navigation, route}) => {
         ].map((row, index) => (
           <View
             key={'keyboard-row' + index}
-            style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}>
             {row.map((b, _index) => (
               <TouchableOpacity
                 key={'keyboard-btn' + _index}
                 style={{
                   ...STYLES.cardShadow,
                   flex: 1,
-                  maxWidth: hp('20%'),
-                  maxHeight: wp('20%'),
-                  aspectRatio: 1,
+                  // maxWidth: wp('20%'),
+                  // maxHeight: hp('20%'),
+                  aspectRatio: 16 / 11,
                   borderRadius: SIZES.radius3,
                   backgroundColor: COLORS.white,
-                  margin: SIZES.padding / 3,
+                  margin: SIZES.padding / 2,
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
@@ -217,18 +261,20 @@ export const Payment = ({navigation, route}) => {
   };
 
   const RenderPaymentMethodItem = () => {
-    const Item = ({item, onPress, backgroundColor, textColor}) => (
+    const Item = ({item, onPress, backgroundColor, textColor, bordercolor}) => (
       <TouchableOpacity
         style={{
           paddingVertical: SIZES.padding / 2,
           backgroundColor: backgroundColor,
-          marginBottom: 1,
           justifyContent: 'center',
           alignItems: 'center',
+          borderColor: COLORS.title,
+          borderWidth: 1,
         }}
         onPress={onPress}>
         <Image source={item.icon} />
-        <Text style={{color: textColor, fontWeight: 'bold'}}>
+        <Text
+          style={{color: textColor, fontWeight: 'bold', fontFamily: 'Arial'}}>
           {item.Descript}
         </Text>
       </TouchableOpacity>
@@ -252,26 +298,57 @@ export const Payment = ({navigation, route}) => {
     };
 
     const handlePayment = () => {
-      if (paymentType !== undefined) {
+      if (paymentType !== undefined && selectedTrans !== undefined) {
         if (paymentType == 'CASH') {
-          if (amountLeft == undefined) {
-            setAmountLeft(posHdrByTrans[0].FINALTOTAL - Number(inputValue));
+          console.log(
+            'Number(inputValue) > posHdrByTrans[0].FINALTOTAL',
+            Number(inputValue),
+            posHdrByTrans[0].FINALTOTAL,
+          );
+          if (Number(inputValue) <= posHdrByTrans[0].FINALTOTAL) {
+            if (amountLeft == undefined) {
+              setAmountLeft(posHdrByTrans[0].FINALTOTAL - Number(inputValue));
+            }
+            if (amountLeft !== undefined) {
+              setAmountLeft(amountLeft - Number(inputValue));
+            }
           }
 
-          if (amountLeft !== undefined) {
-            setAmountLeft(amountLeft - Number(inputValue));
+          if (Number(inputValue) > posHdrByTrans[0].FINALTOTAL) {
+            setChange(pre => [
+              ...pre,
+              {
+                trans: selectedTrans,
+                value: Number(inputValue) - posHdrByTrans[0].FINALTOTAL,
+              },
+            ]);
           }
-        } else {
-          if (amountLeft == undefined) {
-            setAmountLeft(posHdrByTrans[0].FINALTOTAL - Number(inputValue));
+          if (Number(inputValue) == undefined) {
+            if (amountLeft > 0) {
+              setAmountLeft(0);
+            }
           }
-
-          if (amountLeft !== undefined) {
-            setAmountLeft(amountLeft - Number(inputValue));
+        }
+        console.log('input value ne', inputValue);
+        if (paymentType == 'CARD') {
+          if (Number(inputValue) <= posHdrByTrans[0].FINALTOTAL) {
+            setCardCheck(Number(inputValue));
+          }
+          if (Number(inputValue) > posHdrByTrans[0].FINALTOTAL) {
+            // setPaidTrans(pre => [...pre, selectedTrans]);
+            setCardCheck(Number(inputValue));
+          } else {
+            // setPaidTrans(pre => [...pre, selectedTrans]);
+            setCardCheck(posHdrByTrans[0].FINALTOTAL);
           }
         }
       } else {
-        Alert.alert('Empty', 'Please choose your payment method');
+        if (paymentType == undefined) {
+          Alert.alert('Empty', 'Please choose your payment method');
+        }
+        if (selectedTrans == undefined) {
+          Alert.alert('Empty', 'Please choose specific transaction');
+        }
       }
     };
 
@@ -282,29 +359,52 @@ export const Payment = ({navigation, route}) => {
           renderItem={renderItem}
           keyExtractor={item => item.MethodNum}
         />
-
-        <MyButton
-          onPress={() => handlePayment()}
-          iconStyle={{tintColor: COLORS.white}}
-          title={'CHECK'}
-          titleStyle={{
-            ...FONTS.h4,
-            color: COLORS.white,
-            marginLeft: SIZES.padding,
-            marginRight: SIZES.padding,
-            fontWeight: 'bold',
-          }}
-          containerStyle={{
-            backgroundColor: COLORS.title,
-            height: 100,
-          }}
-          // onPress={checkAccessCode}
-          // onPress={() => navigation.navigate(SCREENS.EnterPassword)}
-        />
+        {paidTrans.includes(selectedTrans) ? (
+          <MyButton
+            // onPress={() => handlePayment()}
+            disable={true}
+            iconStyle={{tintColor: COLORS.white}}
+            title={'PAID'}
+            titleStyle={{
+              ...FONTS.h4,
+              color: COLORS.white,
+              marginLeft: SIZES.padding,
+              marginRight: SIZES.padding,
+              fontWeight: 'bold',
+            }}
+            containerStyle={{
+              backgroundColor: COLORS.title,
+              height: 100,
+            }}
+            // onPress={checkAccessCode}
+            // onPress={() => navigation.navigate(SCREENS.EnterPassword)}
+          />
+        ) : (
+          <MyButton
+            onPress={() => handlePayment()}
+            iconStyle={{tintColor: COLORS.white}}
+            title={'APPLY'}
+            titleStyle={{
+              ...FONTS.h4,
+              color: COLORS.white,
+              marginLeft: SIZES.padding,
+              marginRight: SIZES.padding,
+              fontWeight: 'bold',
+            }}
+            containerStyle={{
+              backgroundColor: COLORS.title,
+              height: 100,
+            }}
+            // onPress={checkAccessCode}
+            // onPress={() => navigation.navigate(SCREENS.EnterPassword)}
+          />
+        )}
       </View>
     );
   };
+  console.log('amountLeft', amountLeft);
 
+  console.log('paidTrans', paidTrans);
   const handleMiniPosPay = async ({amount, addInfo, payTransactionID}) => {
     let result = await sharePosHelper.makePayment({
       amount,
@@ -314,25 +414,16 @@ export const Payment = ({navigation, route}) => {
     result = JSON.parse(result);
 
     if (result.Code === '200') {
+      if (
+        !paidTrans.includes(selectedTrans) &&
+        result.totalAmount >= posHdrByTrans[0].FINALTOTAL
+      ) {
+        setPaidTrans(pre => [...pre, selectedTrans]);
+      }
       console.log('Result of Card payment:', JSON.stringify(result));
-      // const ipnResult = await tableServePayBillMiniPosIPN({
-      //   clientGUID,
-      //   payMethodID,
-      //   bodyData: {
-      //     // MerchantID: result.Response.merchantId,
-      //     // TerminalID: result.Response.terminalId,
-      //     // MerchantTransactionID: result.merchantTransId,
-      //     // TransactionType,
-      //     // Status, // - Pending/Success/Cancel
-      //     // Currency,
-      //     // Amount,
-      //     // BankCode,
-      //     // invoiceNo,
-      //     // RefNo,
-      //     PayTransactionID: payTransactionID,
-      //     ResultContent: JSON.stringify(result),
-      //   },
-      // });
+    } else {
+      Alert.alert('ERROR', result.Desc);
+      console.log('Result of Card payment:', JSON.stringify(result));
     }
   };
 
@@ -350,6 +441,7 @@ export const Payment = ({navigation, route}) => {
         totalPrice: _.QUAN * _.OrigCostEach,
         calcMode: amountLeft,
       }));
+
     const printContent = prepareBillForPrinter({
       venueName: 'SpeedDemo',
       venueAddress: 'SpeedDemo',
@@ -360,8 +452,21 @@ export const Payment = ({navigation, route}) => {
       items: items,
       netTotal: posHdrByTrans[0].NETTOTAL,
       finalTotal: posHdrByTrans[0].FINALTOTAL,
-      taxes: [{VAT: 0}],
-      payments: paymentType,
+      taxes: [
+        {name: 'VAT 8%', amount: posHdrByTrans[0].TAX2},
+        {name: 'VAT 10%', amount: posHdrByTrans[0].TAX3},
+      ],
+      payments: [
+        {name: paymentType, amount: posHdrByTrans[0].FINALTOTAL},
+        {
+          name: 'Change',
+          amount: change.some(val => val.trans == selectedTrans)
+            ? toCurrency(
+                change.filter(val => val.trans == selectedTrans)[0].value,
+              )
+            : 0,
+        },
+      ],
       referenceCode: 0,
     });
 
@@ -418,32 +523,31 @@ export const Payment = ({navigation, route}) => {
       errorMsg: printErrorMsg,
     };
   };
+
+  // listener event to handle payment
   useEffect(() => {
-    if (amountLeft == 0 && printReceiptCount < 3) {
+    if ((printReceiptCount < 2 && amountLeft == 0) || change > 0) {
+      if (!paidTrans.includes(selectedTrans)) {
+        setPaidTrans(pre => [...pre, selectedTrans]);
+      }
       setModalVisible(true);
-      // navigation.navigate(SCREENS.SuccessFul);
     }
     if (printReceiptCount == 2) {
       setPrintReceiptCount(0);
-      // if (paymentType == 'CASH') {
-      //   setCashCheck(amountLeft);
-      // }
-      // if (paymentType == 'CARD') {
-      //   setCardCheck(amountLeft);
-      // }
-      setAmountLeft(0);
     }
-  }, [amountLeft, printReceiptCount]);
+  }, [amountLeft, printReceiptCount, change]);
+
+  //handle Card Pay
   useEffect(() => {
-    if (paymentType === 'CARD') {
+    if (paymentType == 'CARD' && cardCheck != 0) {
       handleMiniPosPay({
-        amount: inputValue,
+        amount: cardCheck,
         addInfo: [],
         payMethodID: 1234,
         payTransactionID: 1234,
       });
     }
-  }, [paymentType]);
+  }, [cardCheck, paymentType]);
 
   return (
     <View
@@ -520,8 +624,9 @@ export const Payment = ({navigation, route}) => {
               color: COLORS.title,
               fontWeight: 'bold',
               fontSize: SIZES.body2,
+              fontFamily: 'Arial',
             }}>
-            Payment - Table {JSON.stringify(TableNum)}
+            Payment - Table {JSON.stringify(TableNum)} - Bill
           </Text>
           <Text />
         </View>
@@ -535,146 +640,219 @@ export const Payment = ({navigation, route}) => {
           <View
             style={{
               flex: 1,
+              flexDirection: 'column',
+              backgroundColor: COLORS.white,
             }}>
-            <RenderDulplicateTransact />
             <View
               style={{
-                height: hp('10%'),
-                width: wp('100%'),
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                flex: 1,
+                marginLeft: wp('2%'),
+                marginRight: wp('2%'),
               }}>
-              <BillPayment />
-            </View>
-            <View
-              style={{
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={{color: COLORS.black}}>NET</Text>
-              <Text style={{color: COLORS.black}}>
-                {posHdrByTrans ? toCurrency(posHdrByTrans[0].NETTOTAL) : ''}
-              </Text>
-            </View>
-            <View
-              style={{
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={{color: COLORS.black}}>VAT</Text>
-              <Text style={{color: COLORS.black}}>
-                {posHdrByTrans
-                  ? posHdrByTrans[0].TAX1 !== 0
-                    ? toCurrency(posHdrByTrans[0].TAX1)
-                    : posHdrByTrans[0].TAX2 !== 0
-                    ? toCurrency(posHdrByTrans[0].TAX2)
-                    : posHdrByTrans[0].TAX3 !== 0
-                    ? toCurrency(posHdrByTrans[0].TAX3)
-                    : posHdrByTrans[0].TAX4 !== 0
-                    ? toCurrency(posHdrByTrans[0].TAX4)
-                    : posHdrByTrans[0].TAX5 !== 0
-                    ? toCurrency(posHdrByTrans[0].TAX5)
-                    : ''
-                  : ''}
-              </Text>
-            </View>
-            <View
-              style={{
-                borderStyle: 'dotted',
-                borderWidth: 1,
-                borderRadius: 1,
-                margin: 10,
-              }}
-            />
-            <View
-              style={{
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={{color: COLORS.black, fontWeight: 'bold'}}>
-                TOTAL
-              </Text>
-              <Text style={{color: COLORS.black, fontWeight: 'bold'}}>
-                {posHdrByTrans ? toCurrency(posHdrByTrans[0].FINALTOTAL) : ''}
-              </Text>
-            </View>
+              <RenderDulplicateTransact />
+              <View
+                style={{
+                  height: hp('25%'),
+                  flexDirection: 'row',
+                  backgroundColor: COLORS.lightGray,
+                  justifyContent: 'space-between',
+                }}>
+                <BillPayment />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
+                  NET
+                </Text>
+                <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
+                  {posHdrByTrans ? toCurrency(posHdrByTrans[0].NETTOTAL) : ''}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
+                  VAT
+                </Text>
+                <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
+                  {posHdrByTrans
+                    ? posHdrByTrans[0].TAX1 !== 0
+                      ? toCurrency(posHdrByTrans[0].TAX1)
+                      : posHdrByTrans[0].TAX2 !== 0
+                      ? toCurrency(posHdrByTrans[0].TAX2)
+                      : posHdrByTrans[0].TAX3 !== 0
+                      ? toCurrency(posHdrByTrans[0].TAX3)
+                      : posHdrByTrans[0].TAX4 !== 0
+                      ? toCurrency(posHdrByTrans[0].TAX4)
+                      : posHdrByTrans[0].TAX5 !== 0
+                      ? toCurrency(posHdrByTrans[0].TAX5)
+                      : ''
+                    : ''}
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderStyle: 'dotted',
+                  borderWidth: 1,
+                  borderRadius: 1,
+                  margin: hp('1%'),
+                }}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontWeight: 'bold',
+                    fontFamily: 'Arial',
+                  }}>
+                  TOTAL
+                </Text>
+                <Text
+                  style={{
+                    color: COLORS.black,
+                    fontWeight: 'bold',
+                    fontFamily: 'Arial',
+                  }}>
+                  {posHdrByTrans ? toCurrency(posHdrByTrans[0].FINALTOTAL) : ''}
+                </Text>
+              </View>
 
-            {/* Input Cash and Card money from customer */}
+              {/* Input Cash and Card money from customer */}
 
-            <View
-              style={{
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={{color: COLORS.black}}>Cash</Text>
-              <Text style={{color: COLORS.black}}>{toCurrency(cashCheck)}</Text>
-            </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
+                  Cash
+                </Text>
+                <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
+                  {toCurrency(cashCheck)}
+                </Text>
+              </View>
 
-            <View
-              style={{
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={{color: COLORS.black}}>Card</Text>
-              <Text style={{color: COLORS.black}}>
-                {' '}
-                {toCurrency(cardCheck)}
-              </Text>
-            </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
+                  Card
+                </Text>
+                <Text style={{color: COLORS.black}}>
+                  {' '}
+                  {toCurrency(cardCheck)}
+                </Text>
+              </View>
+              {/* change[1].trans == selectedTrans  */}
+              {/* show the amount value from the bill  */}
 
-            {/* show the amount value from the bill  */}
-            <View
-              style={{
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                backgroundColor: COLORS.amountDue,
-              }}>
-              <Text style={{color: COLORS.white, fontWeight: 'bold'}}>
-                Amount Due
-              </Text>
-              <Text style={{color: COLORS.white, fontWeight: 'bold'}}>
-                {toCurrency(amountLeft)}
-              </Text>
-            </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  backgroundColor: change.some(
+                    val => val.trans == selectedTrans,
+                  )
+                    ? COLORS.change
+                    : COLORS.amountDue,
+                }}>
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontWeight: 'bold',
+                    fontFamily: 'Arial',
+                  }}>
+                  {change.some(val => val.trans == selectedTrans)
+                    ? 'Change'
+                    : 'Amount Due'}
+                </Text>
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontWeight: 'bold',
+                    fontFamily: 'Arial',
+                  }}>
+                  {change.some(val => val.trans == selectedTrans)
+                    ? toCurrency(
+                        change.filter(val => val.trans == selectedTrans)[0]
+                          .value,
+                      )
+                    : paidTrans.includes(selectedTrans)
+                    ? toCurrency(amountLeft)
+                    : posHdrByTrans
+                    ? toCurrency(posHdrByTrans[0].FINALTOTAL)
+                    : ''}
+                </Text>
+              </View>
 
-            {/* show the amount value from the input keyboard  */}
-            <View
+              {/* show the amount value from the input keyboard  */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontWeight: 'bold',
+                    fontFamily: 'Arial',
+                  }}
+                />
+                <Text
+                  style={{
+                    color: COLORS.inputValue,
+                    fontWeight: 'bold',
+                    fontFamily: 'Arial',
+                  }}>
+                  {toCurrency(inputValue)}
+                </Text>
+              </View>
+              <View
+                style={{
+                  marginLeft: wp('8%'),
+                  width: wp('54%'),
+                }}>
+                <RenderKeyboard />
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={navigation.goBack}
               style={{
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                backgroundColor: COLORS.lightGray,
+                height: hp('6%'),
+                justifyContent: 'center',
               }}>
-              <Text style={{color: COLORS.white, fontWeight: 'bold'}} />
-              <Text style={{color: COLORS.inputValue, fontWeight: 'bold'}}>
-                {toCurrency(inputValue)}
+              <Text
+                style={{
+                  fontFamily: 'Arial',
+                  fontWeight: 'bold',
+                  fontSize: 20,
+                  color: COLORS.back,
+                  textAlign: 'center',
+                }}>
+                BACK
               </Text>
-            </View>
-            <View
-              style={{
-                paddingHorizontal: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}>
-              <RenderKeyboard />
-            </View>
+            </TouchableOpacity>
           </View>
           <View
             style={{
-              flex: 0.3,
+              flex: 0.4,
               alignItems: 'center',
-              backgroundColor: COLORS.lightGray,
+              backgroundColor: COLORS.lightGray3,
             }}>
             <RenderPaymentMethodItem navigation={navigation} />
           </View>
-
-          <View />
         </View>
       </View>
     </View>

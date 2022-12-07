@@ -6,6 +6,7 @@ import {COLORS, FONTS, SIZES} from '../constants/theme';
 // import {trackEvent, TRACK_EVENT_NAME} from '../helpers/codepush';
 import {addAlert, settingSelectors, useStore} from '../store';
 import {SCREENS} from './SCREENS';
+import {SharePosTestScreen} from './test/SharePosTestScreen';
 
 export const SettingScreen = ({navigation}) => {
   const appMode = useStore(settingSelectors.appMode);
@@ -52,26 +53,26 @@ export const SettingScreen = ({navigation}) => {
           text={appMode === APPMODE.DEV ? 'Development' : 'Production'}
           onPress={switchAppMode}
         />
-        <SettingButton
+        {/* <SettingButton
           title="Ingenico Test Screen"
           text="Open"
           onPress={() => navigation.navigate(SCREENS.IngenicoTest)}
-        />
+        /> */}
         <SettingButton
           title="SharePos Test Screen"
           text="Open"
-          onPress={() => navigation.navigate(SCREENS.SharePosTest)}
+          onPress={() => navigation.navigate(SharePosTestScreen)}
         />
-        <SettingButton
+        {/* <SettingButton
           title="Pax Test Screen"
           text="Open"
           onPress={() => navigation.navigate(SCREENS.PaxTest)}
-        />
-        <SettingButton
+        /> */}
+        {/* <SettingButton
           title="Launcher Test Screen"
           text="Open"
-          onPress={() => navigation.navigate(SCREENS.LauncherTest)}
-        />
+          onPress={() => navigation.navigate(SCREENS.LauncherTestScreen)}
+        /> */}
       </View>
 
       <TouchableOpacity

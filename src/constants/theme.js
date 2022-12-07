@@ -10,7 +10,7 @@ export const COLORS = {
   primary: '#0072E3', //'#EC4424',
   secondary: '#6c757d',
   info: '#0072E3',
-
+  back: '#008EFF',
   //Payment Status
   success: '#4DAF50',
   fail: '#FF0000',
@@ -29,10 +29,12 @@ export const COLORS = {
   black: '#222831',
 
   amountDue: '#6B6B6B',
+  change: '#4DAF50',
   inputValue: '#0386D0',
 
   lightGray: '#E7E7E7',
   lightGray2: '#D9D9D9',
+  lightGray3: '#F5F5F5',
 };
 export const SIZES = {
   // bottom tab
@@ -57,7 +59,7 @@ export const SIZES = {
   h4: 15,
   h5: 13,
   body1: 30,
-  body2: 22,
+  body2: 20,
   body3: 17,
   body4: 14,
   body5: 12,
@@ -71,44 +73,44 @@ export const SIZES = {
 };
 
 export const FONTS = {
-  largeTitle: {fontFamily: 'Roboto-Black', fontSize: SIZES.largeTitle},
+  largeTitle: {fontFamily: 'Arial', fontSize: SIZES.largeTitle},
   h1: {
-    fontFamily: 'Roboto-Black',
+    fontFamily: 'Arial',
     fontSize: SIZES.h1,
     fontWeight: 'bold',
     lineHeight: 36,
   },
   h2: {
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Arial',
     fontSize: SIZES.h2,
     fontWeight: 'bold',
     lineHeight: 30,
   },
-  h3: {fontFamily: 'Roboto-Bold', fontSize: SIZES.h3, lineHeight: 22},
-  h4: {fontFamily: 'Roboto-Bold', fontSize: SIZES.h4, lineHeight: 22},
-  h5: {fontFamily: 'Roboto-Bold', fontSize: SIZES.h5, lineHeight: 18},
+  h3: {fontFamily: 'Arial', fontSize: SIZES.h3, lineHeight: 22},
+  h4: {fontFamily: 'Arial', fontSize: SIZES.h4, lineHeight: 22},
+  h5: {fontFamily: 'Arial', fontSize: SIZES.h5, lineHeight: 18},
   body1: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Arial',
     fontSize: SIZES.body1,
     lineHeight: 36,
   },
   body2: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: SIZES.body2,
+    fontFamily: 'Arial',
+    fontSize: SIZES.body6,
     lineHeight: 30,
   },
   body3: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Arial',
     fontSize: SIZES.body3,
     lineHeight: 22,
   },
   body4: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Arial',
     fontSize: SIZES.body4,
     lineHeight: 22,
   },
   body5: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Arial',
     fontSize: SIZES.body5,
     lineHeight: 22,
   },

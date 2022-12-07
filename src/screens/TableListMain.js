@@ -15,7 +15,7 @@ import {PasswordInputWithRevealButton, AppVersion} from '../components';
 import {SCREENS} from './SCREENS';
 import {fetchPostHeader, useRelativeTableNo, useTable} from '../hooks';
 import {getWaiterID} from '../store';
-import {uiSelectors, useStore} from '../store';
+
 export const TableListMain = ({navigation}) => {
   const [allTableData, setAllTableData] = useState();
   const [allPosHeader, setAllPosHeader] = useState();
@@ -27,14 +27,21 @@ export const TableListMain = ({navigation}) => {
     queryTbNum: TableNo,
   });
 
-  const FetchTableData = () => {
-    useTable({})
+  const fetchallTable = useRelativeTableNo({});
+  const allTable = () => {
+    fetchallTable
       .then(res => setAllTableData(res))
       .catch(err => console.log(err));
-    fetchPostHeader({})
+  };
+  const fetchposHeader = fetchPostHeader({});
+
+  const posHeader = () => {
+    fetchposHeader
       .then(res => setAllPosHeader(res))
       .catch(err => console.log(err));
+  };
 
+  const FetchTableData = () => {
     if (allTableData !== undefined && allPosHeader !== undefined) {
       for (let i = 0; i < allTableData.length; i++) {
         for (let x = 0; x < allPosHeader.length; x++) {
@@ -54,16 +61,22 @@ export const TableListMain = ({navigation}) => {
 
   useEffect(() => {
     setDuplicateTransact([]);
+    if (!checkTableValue()) {
+      allTable();
+    }
+    posHeader();
     FetchTableData();
   }, [TableNo]);
+  useEffect(() => {
+    FetchTableData();
+  }, [allTableData]);
 
-  // console.log('Table No', TableNo);
-  //console.log('all table data', allTableData);
   const checkTableValue = () => {
     if (TableNo !== '') {
+      setAllTableData();
       selectedTable
         .then(result => {
-          setFinalData(result);
+          setAllTableData(result);
         })
         .catch(err => console.log(err));
     }
