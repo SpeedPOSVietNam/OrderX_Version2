@@ -20,7 +20,7 @@ export const TableListMain = ({navigation}) => {
   const [allTableData, setAllTableData] = useState();
   const [allPosHeader, setAllPosHeader] = useState();
   const [finalData, setFinalData] = useState();
-  const [TableNo, setTableNo] = useState('');
+  const [TableNo, setTableNo] = useState();
   const [duplicateTransact, setDuplicateTransact] = useState([]);
 
   const selectedTable = useRelativeTableNo({
@@ -60,16 +60,25 @@ export const TableListMain = ({navigation}) => {
   };
 
   useEffect(() => {
-    setDuplicateTransact([]);
-    if (!checkTableValue()) {
+    // console.log(
+    //   'TableNo == null || TableNo == undefined',
+    //   TableNo == null || TableNo == undefined,
+    // );
+    if (TableNo == null || TableNo == undefined) {
+      console.log('helooooooo');
       allTable();
+      posHeader();
+      FetchTableData();
     }
-    posHeader();
-    FetchTableData();
   }, [TableNo]);
+
   useEffect(() => {
-    FetchTableData();
-  }, [allTableData]);
+    if (TableNo !== null || TableNo !== undefined) {
+      setDuplicateTransact([]);
+      posHeader();
+      FetchTableData();
+    }
+  }, [allTableData, TableNo]);
 
   const checkTableValue = () => {
     if (TableNo !== '') {

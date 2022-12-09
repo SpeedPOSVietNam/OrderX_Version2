@@ -27,7 +27,6 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {CustomAlert} from '../components';
-import {pad} from 'crypto-js';
 
 export const Payment = ({navigation, route}) => {
   const windowWidth = Dimensions.get('window').width;
@@ -35,7 +34,7 @@ export const Payment = ({navigation, route}) => {
   const {TableNum, TRANSACT, TransactArray} = route.params;
   const [allPosDetail, setAllPosDetail] = useState();
   const [inputValue, setInputValue] = useState('');
-  const [selectedTrans, setSlectedTrans] = useState();
+  const [selectedTrans, setSlectedTrans] = useState('');
   const [posHdrByTrans, setPosHdrByTrans] = useState();
   const [paymentType, setPaymentType] = useState();
   const [amountLeft, setAmountLeft] = useState();
@@ -65,7 +64,11 @@ export const Payment = ({navigation, route}) => {
     posDetail.then(res => setAllPosDetail(res)).catch(err => console.log(err));
   };
   const getPosHeader = () => {
-    posHeader.then(res => setPosHdrByTrans(res)).catch(err => console.log(err));
+    posHeader
+      .then(res => {
+        setPosHdrByTrans(res), setAmountLeft(res[0].FINALTOTAL);
+      })
+      .catch(err => console.log(err));
   };
 
   // const getPaymentMethod = () => {
@@ -300,21 +303,17 @@ export const Payment = ({navigation, route}) => {
     const handlePayment = () => {
       if (paymentType !== undefined && selectedTrans !== undefined) {
         if (paymentType == 'CASH') {
-          console.log(
-            'Number(inputValue) > posHdrByTrans[0].FINALTOTAL',
-            Number(inputValue),
-            posHdrByTrans[0].FINALTOTAL,
-          );
-          if (Number(inputValue) <= posHdrByTrans[0].FINALTOTAL) {
-            if (amountLeft == undefined) {
-              setAmountLeft(posHdrByTrans[0].FINALTOTAL - Number(inputValue));
-            }
-            if (amountLeft !== undefined) {
-              setAmountLeft(amountLeft - Number(inputValue));
-            }
+          //TH1: Thanh toán hết mà k cần nhập số tiền
+          if (Number(inputValue) == 0) {
+            setPaidTrans(pre => [...pre, selectedTrans]);
+            setAmountLeft(
+              posHdrByTrans[0].FINALTOTAL - posHdrByTrans[0].FINALTOTAL,
+            );
           }
-
-          if (Number(inputValue) > posHdrByTrans[0].FINALTOTAL) {
+          //TH2: Thanh toán dư
+          if (Number(inputValue) >= posHdrByTrans[0].FINALTOTAL) {
+            console.log('INPUT VALUE >');
+            setPaidTrans(pre => [...pre, selectedTrans]);
             setChange(pre => [
               ...pre,
               {
@@ -322,16 +321,24 @@ export const Payment = ({navigation, route}) => {
                 value: Number(inputValue) - posHdrByTrans[0].FINALTOTAL,
               },
             ]);
+            setAmountLeft(Number(inputValue) - posHdrByTrans[0].FINALTOTAL);
           }
-          if (Number(inputValue) == undefined) {
-            if (amountLeft > 0) {
-              setAmountLeft(0);
+          //TH3: Thanh toán nhiều dạng khác nhau
+          if (Number(inputValue) < posHdrByTrans[0].FINALTOTAL) {
+            // setPaidTrans(pre => [...pre, selectedTrans]);
+            //
+            if (amountLeft == undefined) {
+              setAmountLeft(posHdrByTrans[0].FINALTOTAL - Number(inputValue));
+            }
+            if (amountLeft !== undefined) {
+              setAmountLeft(amountLeft - Number(inputValue));
             }
           }
+          //TH4 Trường hợp đang thanh toán 1 phần của bill và muốn thanh toán số còn lại
         }
-        console.log('input value ne', inputValue);
+
         if (paymentType == 'CARD') {
-          if (Number(inputValue) <= posHdrByTrans[0].FINALTOTAL) {
+          if (Number(inputValue) < posHdrByTrans[0].FINALTOTAL) {
             setCardCheck(Number(inputValue));
           }
           if (Number(inputValue) > posHdrByTrans[0].FINALTOTAL) {
@@ -342,6 +349,7 @@ export const Payment = ({navigation, route}) => {
             setCardCheck(posHdrByTrans[0].FINALTOTAL);
           }
         }
+        console.log('input value ne', Number(inputValue));
       } else {
         if (paymentType == undefined) {
           Alert.alert('Empty', 'Please choose your payment method');
@@ -359,7 +367,7 @@ export const Payment = ({navigation, route}) => {
           renderItem={renderItem}
           keyExtractor={item => item.MethodNum}
         />
-        {paidTrans.includes(selectedTrans) ? (
+        {Array.from(paidTrans).includes(selectedTrans) ? (
           <MyButton
             // onPress={() => handlePayment()}
             disable={true}
@@ -405,6 +413,7 @@ export const Payment = ({navigation, route}) => {
   console.log('amountLeft', amountLeft);
 
   console.log('paidTrans', paidTrans);
+  console.log('change', change);
   const handleMiniPosPay = async ({amount, addInfo, payTransactionID}) => {
     let result = await sharePosHelper.makePayment({
       amount,
@@ -526,16 +535,22 @@ export const Payment = ({navigation, route}) => {
 
   // listener event to handle payment
   useEffect(() => {
-    if ((printReceiptCount < 2 && amountLeft == 0) || change > 0) {
-      if (!paidTrans.includes(selectedTrans)) {
-        setPaidTrans(pre => [...pre, selectedTrans]);
-      }
+    if (
+      (Array.from(paidTrans).includes(selectedTrans) &&
+        printReceiptCount < 2) ||
+      (amountLeft == 0 && printReceiptCount < 2)
+    ) {
+      // loop in here ??
+      // if (amountLeft == 0) {
+      //   setPaidTrans(pre => [...pre, selectedTrans]);
+      // }
       setModalVisible(true);
     }
+
     if (printReceiptCount == 2) {
       setPrintReceiptCount(0);
     }
-  }, [amountLeft, printReceiptCount, change]);
+  }, [amountLeft, printReceiptCount, change, paidTrans]);
 
   //handle Card Pay
   useEffect(() => {
@@ -788,7 +803,7 @@ export const Payment = ({navigation, route}) => {
                         change.filter(val => val.trans == selectedTrans)[0]
                           .value,
                       )
-                    : paidTrans.includes(selectedTrans)
+                    : Array.from(paidTrans).includes(selectedTrans)
                     ? toCurrency(amountLeft)
                     : posHdrByTrans
                     ? toCurrency(posHdrByTrans[0].FINALTOTAL)

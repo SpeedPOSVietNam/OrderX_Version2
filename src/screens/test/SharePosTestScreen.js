@@ -86,6 +86,18 @@ export const SharePosTestScreen = () => {
     try {
       let result = await sharePosHelper.executeEvent({
         bankCode: 'EIB',
+        tranxType: SHAREPOS_CONSTANTS.tranxType.PRINT_LAST_SETTLEMENT,
+      });
+      addLog(result);
+    } catch (e) {
+      addLog('[ERROR] ' + e);
+    }
+  };
+
+  const printLastTrans = async () => {
+    try {
+      let result = await sharePosHelper.executeEvent({
+        bankCode: 'EIB',
         tranxType: SHAREPOS_CONSTANTS.tranxType.PRINT_LAST_TRANSACTION,
       });
       addLog(result);
@@ -143,6 +155,11 @@ export const SharePosTestScreen = () => {
         onPress={printLastSettlement}
         style={{padding: 10, backgroundColor: '#ddd'}}>
         <Text>Print last settlement</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={printLastTrans}
+        style={{padding: 10, backgroundColor: '#ddd'}}>
+        <Text>Print last transaction</Text>
       </TouchableOpacity>
     </View>
   );

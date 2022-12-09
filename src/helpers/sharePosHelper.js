@@ -10,8 +10,8 @@ export const SHAREPOS_CONSTANTS = {
 
     // Những type dưới đây dùng chung 1 cấu trúc paxCallSharePos để gửi request (hàm executeEvent)
     SETTING: 'SETTING', //Open Initialize screen of Bank
-    PRINT_LAST_SETTLEMENT: 'PRINT_LAST_SETTLEMENT',
-    PRINT_LAST_TRANSACTION: 'PRINT_LAST_TRANSACTION',
+    PRINT_LAST_SETTLEMENT: 'PRNT_SETTLE',
+    PRINT_LAST_TRANSACTION: 'PRNT_LAST_TRANX',
     PRNT_TRANX: 'PRNT_TRANX', //Open Transaction History of Bank, choose one and print
     VIEW_TOTAL_TRANSACTION: 'VIEW_TOTAL_TRANSACTION',
     HOME_APP: 'HOME_APP', //Open Main Screen of Bank
