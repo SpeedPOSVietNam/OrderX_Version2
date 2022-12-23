@@ -108,6 +108,7 @@ export const OrderHistory = ({navigation}) => {
   };
 
   useEffect(() => {
+    setFinalData();
     fetchTransPay();
     fetchTransHeader();
     // listRenderCondition();
@@ -331,7 +332,6 @@ export const OrderHistory = ({navigation}) => {
         style={{
           width: '100%',
           paddingHorizontal: 10,
-          paddingVertical: 20,
           flexDirection: 'column',
           justifyContent: 'space-between',
           alignItems: 'center',

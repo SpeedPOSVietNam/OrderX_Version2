@@ -24,44 +24,26 @@ import {
   getEmployee,
   waiterLogin,
 } from '../hooks';
-import {authSelectors, useStore, uiSelectors} from '../store';
+import {
+  authSelectors,
+  useStore,
+  uiSelectors,
+  getWaiterID,
+  getServerHostIP,
+} from '../store';
 import {SCREENS} from './SCREENS';
-import {base64Icon} from '../helpers/utils';
-import {SettingScreen} from './SettingScreen';
-import {SharePosTestScreen} from './test/SharePosTestScreen';
+import {useTranslation} from 'react-i18next';
 
 export const EnterWaiter = ({navigation}) => {
-  const clientGUID = useStore(authSelectors.clientGUID);
-  const setClientGUID = useStore(authSelectors.setClientGUID);
-  const venueGUID = useStore(authSelectors.venueGUID);
-  const setVenueGUID = useStore(authSelectors.setVenueGUID);
+  const {t} = useTranslation();
+  const [checkLoading, setCheckLoading] = useState(false);
   const setWaiterID = useStore(authSelectors.setWaiterID);
-  const clientID = useStore(authSelectors.clientID);
-  const setClientID = useStore(authSelectors.setClientID);
-  const venueID = useStore(authSelectors.venueID);
-  const setVenueID = useStore(authSelectors.setVenueID);
-  const setPreLoading = useStore(uiSelectors.setPreLoading);
-  // console.log(
-  //   'CHECK DEVICE LOGIN',
-  //   clientGUID != null &&
-  //     clientID == null &&
-  //     venueGUID != null &&
-  //     venueID == null,
-  // );
-  // useEffect(() => {
-  // if (
-  //   clientGUID != null &&
-  //   clientID == null &&
-  //   venueGUID != null &&
-  //   venueID == null
-  // ) {
-  // setGlobalLoading('Device logging in...');
 
   const checkPasswordAsync = async () => {
     const waiter = await getEmployee({
       Swipe: waiterCode,
     });
-    console.log('WAITER INFO', waiter);
+    // console.log('WAITER INFO', waiter);
 
     if (waiter?.length === 0) {
       console.log(
@@ -69,35 +51,23 @@ export const EnterWaiter = ({navigation}) => {
         'reason: Incorrect waiter code',
         waiterCode,
       );
-      Alert.alert('Login Failed', 'Incorrect waiter code');
-    } else if (!waiter[0].IsActive) {
+      setCheckLoading(false);
+      Alert.alert(t('loginFailed'), t('incorrectWaiterCode'));
+    } else if (waiter[0].IsActive == 0) {
+      setCheckLoading(false);
       Alert.alert(
         'Account deactived',
         'Contact your administrator for more detail.',
       );
     } else {
-      // const result = await waiterLogin({waiterID: waiter[0].WaiterID});
-
-      // const {
-      //   ScenarioCode,
-      //   UpdateCount,
-      //   DateCreated,
-      //   DateModified,
-      //   DateExpired,
-      // } = result;
-      // console.log('result', 'success', {
-      //   waiterCode,
-      //   waiterID: waiter[0].WaiterID,
-      // });
-
-      // console.log('Check waiter device login: ', result);
+      setCheckLoading(false);
       setWaiterID(waiter[0]);
-      // setPreLoading(true);
       navigation.navigate(SCREENS.TableListMain);
     }
   };
 
   const checkPassword = () => {
+    setCheckLoading(true);
     if (waiterCode === '') {
       Alert.alert('ERROR', 'Missing Waiter Code!');
       return;
@@ -106,7 +76,9 @@ export const EnterWaiter = ({navigation}) => {
 
     checkPasswordAsync()
       .then(() => {})
-      .catch(e => Alert.alert('ERROR', e.message));
+      .catch(e => {
+        Alert.alert('ERROR', e.message), setCheckLoading(false);
+      });
   };
 
   const [waiterCode, setWaiterCode] = useState('221278');
@@ -130,7 +102,7 @@ export const EnterWaiter = ({navigation}) => {
             fontWeight: 'bold',
             fontSize: SIZES.body3,
           }}>
-          Have a nice day!
+          {t('haveaNiceDay')}
         </Text>
         <Text />
       </View>
@@ -162,7 +134,7 @@ export const EnterWaiter = ({navigation}) => {
               textAlign: 'center',
               fontWeight: 'bold',
             }}>
-            Enter PASSWORD
+            {t('enterPassword')}
           </Text>
         </TouchableOpacity>
         <PasswordInputWithRevealButton
@@ -170,28 +142,48 @@ export const EnterWaiter = ({navigation}) => {
           RighImageSrc1={icons.eye_close}
           RighImageSrc2={icons.eye_open}
           LeftImageSrc={icons.lock}
-          textHolder={'Enter client GUID'}
+          textHolder={t('waiterCode')}
           keyboardType={'number-pad'}
           value={waiterCode}
           onChangeText={value => setWaiterCode(value)}
         />
-        <MyButton
-          iconStyle={{tintColor: COLORS.white}}
-          title={'LOGIN'}
-          titleStyle={{
-            ...FONTS.h4,
-            color: COLORS.white,
-            marginLeft: SIZES.padding,
-            marginRight: SIZES.padding,
-          }}
-          containerStyle={{
-            backgroundColor: COLORS.title,
-            borderRadius: SIZES.radius,
-            marginBottom: SIZES.padding,
-          }}
-          onPress={checkPassword}
-          //onPress={() => navigation.navigate(SCREENS.SharePosTestScreen)}
-        />
+        {!checkLoading ? (
+          <MyButton
+            iconStyle={{tintColor: COLORS.white}}
+            disable={!checkLoading ? false : true}
+            title={t('login')}
+            titleStyle={{
+              ...FONTS.h4,
+              color: COLORS.white,
+              marginLeft: SIZES.padding,
+              marginRight: SIZES.padding,
+            }}
+            containerStyle={{
+              backgroundColor: COLORS.title,
+              borderRadius: SIZES.radius,
+              marginBottom: SIZES.padding,
+            }}
+            onPress={checkPassword}
+          />
+        ) : (
+          <MyButton
+            iconStyle={{tintColor: COLORS.white}}
+            disable={!checkLoading ? false : true}
+            title={t('loading')}
+            titleStyle={{
+              ...FONTS.h4,
+              color: COLORS.white,
+              marginLeft: SIZES.padding,
+              marginRight: SIZES.padding,
+            }}
+            containerStyle={{
+              backgroundColor: COLORS.title,
+              borderRadius: SIZES.radius,
+              marginBottom: SIZES.padding,
+            }}
+            onPress={checkPassword}
+          />
+        )}
       </View>
 
       <View

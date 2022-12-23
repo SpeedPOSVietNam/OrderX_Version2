@@ -21,7 +21,10 @@ export const SharePosTestScreen = () => {
 
   const payment = async () => {
     try {
-      const result = await sharePosHelper.makePayment({amount: 1000});
+      const result = await sharePosHelper.makePayment({
+        amount: 1000,
+        merchantTransId: 1234,
+      });
       addLog(result);
       console.log(result);
     } catch (e) {
@@ -69,7 +72,7 @@ export const SharePosTestScreen = () => {
     try {
       const result = await sharePosHelper.autoInitialize({
         bankCode: 'EIB',
-        refNo: '16001600',
+        refNo: '00001900',
         ip: '113.161.81.81',
         port: '11191',
         nii: '004',
@@ -106,6 +109,26 @@ export const SharePosTestScreen = () => {
     }
   };
 
+  const voidTrans = async () => {
+    try {
+      let result = await sharePosHelper.voidTrans({
+        bankCode: 'EIB',
+      });
+      addLog(result);
+    } catch (e) {
+      addLog('[ERROR] ' + e);
+    }
+  };
+
+  const checkTransaction = async () => {
+    try {
+      let result = await sharePosHelper.checkTransaction({});
+      addLog(result);
+    } catch (e) {
+      addLog('[ERROR] ' + e);
+    }
+  };
+
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <TextInput
@@ -119,6 +142,12 @@ export const SharePosTestScreen = () => {
         onPress={payment}
         style={{padding: 10, backgroundColor: '#ddd'}}>
         <Text>Payment</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={voidTrans}
+        style={{padding: 10, backgroundColor: '#ddd'}}>
+        <Text>Void</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -160,6 +189,11 @@ export const SharePosTestScreen = () => {
         onPress={printLastTrans}
         style={{padding: 10, backgroundColor: '#ddd'}}>
         <Text>Print last transaction</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={checkTransaction}
+        style={{padding: 10, backgroundColor: '#ddd'}}>
+        <Text>Check transaction</Text>
       </TouchableOpacity>
     </View>
   );

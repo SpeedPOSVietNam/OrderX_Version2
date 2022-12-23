@@ -1,5 +1,12 @@
-import React from 'react';
-import {Alert, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+  TextInput,
+  Image,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {APPMODE} from '../constants/global';
 import {COLORS, FONTS, SIZES} from '../constants/theme';
@@ -7,11 +14,55 @@ import {COLORS, FONTS, SIZES} from '../constants/theme';
 import {addAlert, settingSelectors, useStore} from '../store';
 import {SCREENS} from './SCREENS';
 import {SharePosTestScreen} from './test/SharePosTestScreen';
+import {MyButton} from '../components';
+import icons from '../constants/icons';
+import '../constants/translations/i18n';
+import {useTranslation} from 'react-i18next';
 
 export const SettingScreen = ({navigation}) => {
+  const {t, i18n} = useTranslation();
   const appMode = useStore(settingSelectors.appMode);
   const setAppMode = useStore(settingSelectors.setAppMode);
+  const serverHostIP = useStore(settingSelectors.serverHostIP);
+  const setServerHostIP = useStore(settingSelectors.setServerHostIP);
+  const [IPTemp, setIPTemp] = useState(serverHostIP);
+  const lang = useStore(settingSelectors.lang);
+  const setlang = useStore(settingSelectors.setLang);
+  const [currentLanguage, setLanguage] = useState(lang);
 
+  useEffect(() => {
+    i18n.changeLanguage(lang);
+  }, [lang]);
+
+  const SettingItem = ({icon, text, rightComponent, style}) => (
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: SIZES.padding,
+        ...style,
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Image
+          source={icon}
+          style={{
+            width: 25,
+            height: 25,
+            marginRight: SIZES.padding,
+            tintColor: COLORS.secondary,
+          }}
+        />
+        <Text style={{...FONTS.body4, color: COLORS.black}}>{text}</Text>
+      </View>
+      {rightComponent}
+    </View>
+  );
   const switchAppMode = () => {
     const newAppMode = appMode === APPMODE.DEV ? APPMODE.PROD : APPMODE.DEV;
 
@@ -20,20 +71,6 @@ export const SettingScreen = ({navigation}) => {
       `Are you sure to switch app mode to ${newAppMode}?`,
     );
     setAppMode(newAppMode);
-    // addAlert({f
-    //   title: 'Switch app mode',
-    //   message: `Are you sure to switch app mode to ${newAppMode}?`,
-    //   buttons: [
-    //     {text: 'Cancel'},
-    //     {
-    //       text: 'Switch',
-    //       onPress: () => {
-    //         // trackEvent(TRACK_EVENT_NAME.SWITCH_APPMODE, {appMode: newAppMode});
-    //         setAppMode(newAppMode);
-    //       },
-    //     },
-    //   ],
-    // });
   };
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
@@ -48,31 +85,98 @@ export const SettingScreen = ({navigation}) => {
       </Text>
 
       <View style={{flex: 1}}>
+        <View
+          style={{
+            padding: SIZES.padding,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <Text style={{...FONTS.body4}}>Switch Language</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <SettingButton
+              text={'English'}
+              onPress={() => {
+                setlang('en');
+                setLanguage('en');
+              }}
+              Color={currentLanguage == 'en' ? COLORS.info : COLORS.black}
+            />
+            <SettingButton
+              text={'VietNam'}
+              onPress={() => {
+                setlang('vi');
+                setLanguage('vi');
+              }}
+              Color={currentLanguage == 'vi' ? COLORS.info : COLORS.black}
+            />
+          </View>
+        </View>
+
         <SettingButton
           title="Switch app mode"
           text={appMode === APPMODE.DEV ? 'Development' : 'Production'}
           onPress={switchAppMode}
         />
-        {/* <SettingButton
-          title="Ingenico Test Screen"
-          text="Open"
-          onPress={() => navigation.navigate(SCREENS.IngenicoTest)}
-        /> */}
+        <SettingItem
+          icon={icons.flash_on}
+          text={'Server Host IP'}
+          rightComponent={
+            <View style={{flex: 1, height: 100}}>
+              <TextInput
+                value={IPTemp}
+                onChangeText={text => {
+                  setIPTemp(text);
+                }}
+                style={{
+                  flex: 1,
+                  backgroundColor: COLORS.lightGray3,
+                  borderRadius: SIZES.radius,
+                }}
+              />
+              {IPTemp !== serverHostIP && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignSelf: 'flex-end',
+                  }}>
+                  <TextInput
+                    style={{
+                      flex: 1,
+                      backgroundColor: COLORS.lightGray3,
+                      borderRadius: SIZES.radius,
+                    }}
+                  />
+                  <MyButton
+                    icon={icons.checked}
+                    iconStyle={{
+                      tintColor: COLORS.success,
+                    }}
+                    containerStyle={{}}
+                    onPress={() => setServerHostIP(IPTemp)}
+                  />
+                  <MyButton
+                    icon={icons.cancel}
+                    iconStyle={{
+                      tintColor: COLORS.danger,
+                    }}
+                    onPress={() => setIPTemp(serverHostIP)}
+                  />
+                </View>
+              )}
+            </View>
+          }
+        />
         <SettingButton
           title="SharePos Test Screen"
           text="Open"
           onPress={() => navigation.navigate(SharePosTestScreen)}
         />
-        {/* <SettingButton
-          title="Pax Test Screen"
-          text="Open"
-          onPress={() => navigation.navigate(SCREENS.PaxTest)}
-        /> */}
-        {/* <SettingButton
-          title="Launcher Test Screen"
-          text="Open"
-          onPress={() => navigation.navigate(SCREENS.LauncherTestScreen)}
-        /> */}
       </View>
 
       <TouchableOpacity
@@ -92,7 +196,7 @@ export const SettingScreen = ({navigation}) => {
   );
 };
 
-const SettingButton = ({title, text, onPress}) => (
+const SettingButton = ({title, text, onPress, Color}) => (
   <TouchableOpacity
     onPress={onPress}
     style={{
@@ -100,7 +204,7 @@ const SettingButton = ({title, text, onPress}) => (
       justifyContent: 'space-between',
       padding: SIZES.padding,
     }}>
-    <Text style={{...FONTS.body4, color: COLORS.black}}>{title}</Text>
-    <Text style={{...FONTS.body4, color: COLORS.info}}>{text}</Text>
+    <Text style={{...FONTS.body4, color: Color}}>{title}</Text>
+    <Text style={{...FONTS.body4, color: Color}}>{text}</Text>
   </TouchableOpacity>
 );

@@ -7,9 +7,9 @@ import {apiQROrderGET} from '../../helpers/fetch';
 
 export const HOOK_PAYMENT_METHOD = [
   {
-    MethodNum: 1,
+    MethodNum: 1001,
     Descript: 'CASH',
     icon: icons.cash,
   },
-  {MethodNum: 2, Descript: 'CARD', icon: icons.card},
+  {MethodNum: 1002, Descript: 'CARD', icon: icons.card},
 ];

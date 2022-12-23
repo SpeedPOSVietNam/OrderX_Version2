@@ -1,0 +1,38 @@
+{
+    "translation": {
+        "loading": "Loading",
+        "search": "Search",
+        "total": "Total",
+        "haveaNiceDay": "Have A Nice Day!",
+        "enterPassword": "Enter Password",
+        "waiterCode":"Waiter Code",
+        "loginFailed":"Login Failed",
+        "incorrectWaiterCode":"Incorrect waiter code",
+        "login": "Login",
+        "searchIDforpayment": "Search ID For Payment",
+        "tableID": "Table ID",
+        "occupied": "Occupied",
+        "serving": "Serving",
+        "empty": "Empty",
+        "orderHistoty": "Order History",
+        "fromDate": "From Date",
+        "toDate": "To Date",
+
+
+        "billID": "Bill ID",
+        "tableNo": "Table No",
+        "closeTime": "Close Time",
+        "paymentMethod": "Payment Method",
+        "paymentStatus": "Payment Status",
+        "payment": "Payment",
+        "table": "Table",
+        "bill": "Bill",
+        "cash": "CASH",
+        "card": "CARD",
+        "net": "Net",
+        "vat": "VAT",
+        "amountDue": "Amount Due",
+        "back": "Back",
+        "apply": "Apply",
+    }
+  }

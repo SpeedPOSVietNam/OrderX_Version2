@@ -78,9 +78,10 @@ export const stopVibrate = () => Vibration.cancel();
 export const notifyMessage = (message, duration = ToastAndroid.SHORT) => {
   if (Platform.OS === 'android') {
     ToastAndroid.show(message, duration);
-  } else {
-    addAlert({color: COLORS.info, title: 'Notify', message});
   }
+  // else {
+  //   addAlert({color: COLORS.info, title: 'Notify', message});
+  // }
 };
 
 // https://stackoverflow.com/a/1484514/11898496

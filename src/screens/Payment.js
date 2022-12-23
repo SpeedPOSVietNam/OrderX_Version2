@@ -16,8 +16,8 @@ import {MyButton} from '../components';
 import icons, {card} from '../constants/icons';
 import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
 import {HOOK_PAYMENT_METHOD} from '../hooks/react-query/usePaymentMethod';
-import {fetchPostHeader, fetchPosDetail} from '../hooks';
-import {roundDecimal, toCurrency} from '../helpers/utils';
+import {fetchPostHeader, fetchPosDetail, confirmCloseTable} from '../hooks';
+import {notifyMessage, roundDecimal, toCurrency} from '../helpers/utils';
 import {prepareBillForPrinter} from '../helpers/printFormat';
 import {paxHelper} from '../helpers/paxHelper';
 import {getWaiterID} from '../store';
@@ -44,12 +44,22 @@ export const Payment = ({navigation, route}) => {
       value: '',
     },
   ]);
-  const [cashCheck, setCashCheck] = useState([]);
-  const [cardCheck, setCardCheck] = useState([]);
+  const [cashCheck, setCashCheck] = useState(0);
+  const [cardCheck, setCardCheck] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [printReceiptCount, setPrintReceiptCount] = useState(0);
   const [paidTrans, setPaidTrans] = useState([]);
-
+  const [paidTransAmountLeft, setPaidTransAmountLeft] = useState([]);
+  const getCloseTrancsaction = tender => {
+    confirmCloseTable({
+      Transact: selectedTrans,
+      EmpNum: getWaiterID().EmpNum,
+      Tender: tender,
+      MethodNum: paymentType == 'CASH' ? 1001 : 1002,
+    })
+      .then(res => console.log('CLOSE TRANSACION', res))
+      .catch(err => console.log('CLOSE TRANSACION ERROR', err));
+  };
   const posDetail = fetchPosDetail({
     Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
   });
@@ -306,13 +316,22 @@ export const Payment = ({navigation, route}) => {
           //TH1: Thanh toán hết mà k cần nhập số tiền
           if (Number(inputValue) == 0) {
             setPaidTrans(pre => [...pre, selectedTrans]);
-            setAmountLeft(
-              posHdrByTrans[0].FINALTOTAL - posHdrByTrans[0].FINALTOTAL,
-            );
+            setPaidTransAmountLeft(pre => [
+              ...pre,
+              {
+                trans: selectedTrans,
+                value:
+                  posHdrByTrans[0].FINALTOTAL - posHdrByTrans[0].FINALTOTAL,
+              },
+            ]);
+            // setAmountLeft(
+            //   posHdrByTrans[0].FINALTOTAL - posHdrByTrans[0].FINALTOTAL,
+            // );
+            notifyMessage('Payment Successful!');
+            getCloseTrancsaction(posHdrByTrans[0].FINALTOTAL);
           }
           //TH2: Thanh toán dư
           if (Number(inputValue) >= posHdrByTrans[0].FINALTOTAL) {
-            console.log('INPUT VALUE >');
             setPaidTrans(pre => [...pre, selectedTrans]);
             setChange(pre => [
               ...pre,
@@ -321,35 +340,49 @@ export const Payment = ({navigation, route}) => {
                 value: Number(inputValue) - posHdrByTrans[0].FINALTOTAL,
               },
             ]);
-            setAmountLeft(Number(inputValue) - posHdrByTrans[0].FINALTOTAL);
+            // setAmountLeft(Number(inputValue) - posHdrByTrans[0].FINALTOTAL);
+            notifyMessage('Payment Successful!');
+            getCloseTrancsaction(posHdrByTrans[0].FINALTOTAL);
           }
           //TH3: Thanh toán nhiều dạng khác nhau
-          if (Number(inputValue) < posHdrByTrans[0].FINALTOTAL) {
+          if (
+            Number(inputValue) < posHdrByTrans[0].FINALTOTAL &&
+            Number(inputValue) !== 0
+          ) {
             // setPaidTrans(pre => [...pre, selectedTrans]);
             //
-            if (amountLeft == undefined) {
-              setAmountLeft(posHdrByTrans[0].FINALTOTAL - Number(inputValue));
-            }
-            if (amountLeft !== undefined) {
-              setAmountLeft(amountLeft - Number(inputValue));
-            }
+            // if (amountLeft == undefined) {
+            //   setAmountLeft(posHdrByTrans[0].FINALTOTAL - Number(inputValue));
+            // }
+            // if (amountLeft !== undefined) {
+            //   setAmountLeft(amountLeft - Number(inputValue));
+            // }
+            notifyMessage('Input value must be equal total of the bill');
+            //Alert.alert('Caution', 'Input value must be equal the total');
           }
           //TH4 Trường hợp đang thanh toán 1 phần của bill và muốn thanh toán số còn lại
         }
 
         if (paymentType == 'CARD') {
-          if (Number(inputValue) < posHdrByTrans[0].FINALTOTAL) {
+          if (
+            (Number(inputValue) < posHdrByTrans[0].FINALTOTAL &&
+              Number(inputValue) !== 0) ||
+            Number(inputValue) > posHdrByTrans[0].FINALTOTAL
+          ) {
             setCardCheck(Number(inputValue));
+            // Alert.alert(
+            //   'Caution',
+            //   'If you want to pay by card! Make sure your input is equal total of the bill',
+            // );
+            notifyMessage('Input value must be equal total of the bill');
           }
-          if (Number(inputValue) > posHdrByTrans[0].FINALTOTAL) {
-            // setPaidTrans(pre => [...pre, selectedTrans]);
-            setCardCheck(Number(inputValue));
-          } else {
-            // setPaidTrans(pre => [...pre, selectedTrans]);
+          if (
+            Number(inputValue) == 0 ||
+            Number(inputValue) == posHdrByTrans[0].FINALTOTAL
+          ) {
             setCardCheck(posHdrByTrans[0].FINALTOTAL);
           }
         }
-        console.log('input value ne', Number(inputValue));
       } else {
         if (paymentType == undefined) {
           Alert.alert('Empty', 'Please choose your payment method');
@@ -381,11 +414,9 @@ export const Payment = ({navigation, route}) => {
               fontWeight: 'bold',
             }}
             containerStyle={{
-              backgroundColor: COLORS.title,
+              backgroundColor: COLORS.secondary,
               height: 100,
             }}
-            // onPress={checkAccessCode}
-            // onPress={() => navigation.navigate(SCREENS.EnterPassword)}
           />
         ) : (
           <MyButton
@@ -403,17 +434,23 @@ export const Payment = ({navigation, route}) => {
               backgroundColor: COLORS.title,
               height: 100,
             }}
-            // onPress={checkAccessCode}
-            // onPress={() => navigation.navigate(SCREENS.EnterPassword)}
           />
         )}
       </View>
     );
   };
-  console.log('amountLeft', amountLeft);
 
-  console.log('paidTrans', paidTrans);
-  console.log('change', change);
+  // console.log(
+  //   'paidTrans',
+  //   paidTrans,
+  //   'Transact Array',
+  //   TransactArray,
+  //   'Card Check',
+  //   cardCheck,
+  //   'selectedTrans',
+  //   selectedTrans,
+  // );
+
   const handleMiniPosPay = async ({amount, addInfo, payTransactionID}) => {
     let result = await sharePosHelper.makePayment({
       amount,
@@ -423,15 +460,12 @@ export const Payment = ({navigation, route}) => {
     result = JSON.parse(result);
 
     if (result.Code === '200') {
-      if (
-        !paidTrans.includes(selectedTrans) &&
-        result.totalAmount >= posHdrByTrans[0].FINALTOTAL
-      ) {
-        setPaidTrans(pre => [...pre, selectedTrans]);
-      }
+      setPaidTrans(pre => [...pre, selectedTrans]);
+      getCloseTrancsaction(posHdrByTrans[0].FINALTOTAL);
+
       console.log('Result of Card payment:', JSON.stringify(result));
     } else {
-      Alert.alert('ERROR', result.Desc);
+      setCardCheck(), setPaymentType(), Alert.alert('ERROR', result.Desc);
       console.log('Result of Card payment:', JSON.stringify(result));
     }
   };
@@ -552,9 +586,13 @@ export const Payment = ({navigation, route}) => {
     }
   }, [amountLeft, printReceiptCount, change, paidTrans]);
 
+  // console.log(
+  //   '!paidTrans.includes(selectedTrans',
+  //   !paidTrans.includes(selectedTrans),
+  // );
   //handle Card Pay
   useEffect(() => {
-    if (paymentType == 'CARD' && cardCheck != 0) {
+    if (paymentType == 'CARD' && cardCheck !== undefined) {
       handleMiniPosPay({
         amount: cardCheck,
         addInfo: [],
@@ -572,7 +610,7 @@ export const Payment = ({navigation, route}) => {
       <CustomAlert
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        title={'Print Succes'}
+        title={'Print Successfully'}
         message={''}
         android={{
           container: {
@@ -594,6 +632,17 @@ export const Payment = ({navigation, route}) => {
         buttons={[
           {
             text: 'Cancel',
+            func: () => {
+              if (
+                paidTrans.length == TransactArray.length &&
+                paidTrans.includes(selectedTrans)
+              ) {
+                setPaidTrans([]);
+                setSlectedTrans();
+                setPaymentType();
+                navigation.push('TableListMain');
+              }
+            },
           },
           {
             text: 'Print Next',
@@ -627,7 +676,13 @@ export const Payment = ({navigation, route}) => {
             alignItems: 'center',
             backgroundColor: COLORS.white,
           }}>
-          <TouchableOpacity onPress={() => navigation.push('TableListMain')}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.push('TableListMain'),
+                setSlectedTrans(),
+                setPaymentType();
+              setInputValue();
+            }}>
             <Image
               source={icons.arrowLeft}
               style={{width: 20, height: 20}}
@@ -804,7 +859,15 @@ export const Payment = ({navigation, route}) => {
                           .value,
                       )
                     : Array.from(paidTrans).includes(selectedTrans)
-                    ? toCurrency(amountLeft)
+                    ? paidTransAmountLeft.some(
+                        val => val.trans == selectedTrans,
+                      )
+                      ? toCurrency(
+                          paidTransAmountLeft.filter(
+                            val => val.trans == selectedTrans,
+                          )[0].value,
+                        )
+                      : 0
                     : posHdrByTrans
                     ? toCurrency(posHdrByTrans[0].FINALTOTAL)
                     : ''}
@@ -829,6 +892,7 @@ export const Payment = ({navigation, route}) => {
                     color: COLORS.inputValue,
                     fontWeight: 'bold',
                     fontFamily: 'Arial',
+                    height: hp('3%'),
                   }}>
                   {toCurrency(inputValue)}
                 </Text>
@@ -842,7 +906,12 @@ export const Payment = ({navigation, route}) => {
               </View>
             </View>
             <TouchableOpacity
-              onPress={navigation.goBack}
+              onPress={() => {
+                navigation.push('TableListMain'),
+                  setSlectedTrans(),
+                  setPaymentType();
+                setInputValue();
+              }}
               style={{
                 backgroundColor: COLORS.lightGray,
                 height: hp('6%'),

@@ -10,8 +10,9 @@ export const APPMODE_CONSTANTS = {
   [APPMODE.PROD]: {
     APP_NAME: 'Speed_STA-PROD',
     CODEPUSH_KEY: 'M2uWIBe8id8cN8-mpHtOQHgw1Orq7QqkJXrK_', // production
-    // SERVER_HOST_IP: 'http://orderx-api.speedtech.vn',
-    SERVER_HOST_IP: 'http://qr-order.speedtech.vn',
+
+    SERVER_HOST_IP: 'http://192.168.1.101',
+    //SERVER_HOST_IP: 'http://qr-order.speedtech.vn',
     SOCKET_SERVER_URL: 'ws://orderx-io.speedtech.vn:8071',
     SOCKET_APP_KEY: 2264808,
     SHAREPOS_PAYMENT_SECRETKEY: '1111111111111111', // for testing TODO get production secretKey
@@ -30,6 +31,7 @@ export const APPMODE_CONSTANTS = {
     APP_NAME: 'Speed_STA-DEV',
     CODEPUSH_KEY: 'LQrOSHZDEKPicJxy0fAOR0qZCs4jz7pEHFrM8', // staging
     // SERVER_HOST_IP: 'http://orderx-dev.speedtech.vn'
+    SERVER_HOST_IP: 'http://qr-order.speedtech.vn',
     SOCKET_SERVER_URL: 'ws://orderx-io-dev.speedtech.vn:8070',
     SOCKET_APP_KEY: 2264808,
     SHAREPOS_PAYMENT_SECRETKEY: '1111111111111111', // for testing

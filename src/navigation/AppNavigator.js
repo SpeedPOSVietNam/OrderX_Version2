@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {COLORS} from '../constants/theme';
@@ -15,12 +15,19 @@ import {LoadingScreen} from '../screens/LoadingScreen';
 import {uiSelectors, useStore} from '../store';
 import {Counter} from '../screens/Counter';
 import {SharePosTestScreen} from '../screens/test/SharePosTestScreen';
-
-const Stack = createNativeStackNavigator();
-
+import '../constants/translations/i18n';
+import {useTranslation} from 'react-i18next';
+import {addAlert, settingSelectors} from '../store';
 export const AppNavigator = () => {
-  const editTableMap = useStore(uiSelectors.editTableMap);
-  const preLoading = useStore(uiSelectors.preLoading);
+  const {t, i18n} = useTranslation();
+
+  const lang = useStore(settingSelectors.lang);
+
+  useEffect(() => {
+    i18n.changeLanguage(lang);
+  }, [lang]);
+  const Stack = createNativeStackNavigator();
+
   return (
     <NavigationContainer>
       <Stack.Navigator

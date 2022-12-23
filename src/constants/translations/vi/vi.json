@@ -1,0 +1,38 @@
+{
+    "translation": {
+        "loading": "Đang tải",
+        "search": "Tìm kiếm",
+        "total": "Tổng cộng",
+        "haveaNiceDay": "Chúc bạn một ngày tốt lành!",
+        "enterPassword": "Nhập mật khẩu",
+        "waiterCode":"Mã nhân viên",
+        "loginFailed":"Đăng nhập thất bại",
+        "incorrectWaiterCode":"Sai mã nhân viên",
+        "login": "Đăng nhập",
+        "searchIDforpayment": "Tìm mã bàn",
+        "tableID": "Mã bàn",
+        "occupied": "Có khách",
+        "serving": "Đang phục vụ",
+        "empty": "Trống",
+        "orderHistoty": "Lịch sử",
+        "fromDate": "Từ ngày",
+        "toDate": "Tới ngày",
+
+
+        "billID": "Mã Bill",
+        "tableNo": "Bàn số",
+        "closeTime": "Giờ đóng",
+        "paymentMethod": "Phương pháp thanh toán",
+        "paymentStatus": "Trạng thái thanh toán",
+        "payment": "Thanh toán",
+        "table": "BÀN",
+        "bill": "Hoá đơn",
+        "cash": "Tiền mặt",
+        "card": "Thẻ",
+        "net": "Net",
+        "vat": "VAT",
+        "amountDue": "Còn lại",
+        "back": "Trở về",
+        "apply": "Áp dụng"
+    }
+  }

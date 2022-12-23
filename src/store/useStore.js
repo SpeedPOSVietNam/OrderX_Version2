@@ -71,4 +71,5 @@ export const setAppMode = mode =>
   useStore.getState().settingActions.setAppMode(mode);
 export const addAlert = alert => useStore.getState().uiActions.addAlert(alert);
 export const getModalAlert = () => useStore.getState().ui.modalAlert;
+export const getServerHostIP = () => useStore.getState().setting.serverHostIP;
 //#endregion

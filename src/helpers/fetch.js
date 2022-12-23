@@ -7,7 +7,9 @@ import {
   isInApiResultCode,
 } from '../constants/global';
 import {COLORS} from '../constants/theme';
-
+import {Alert} from 'react-native';
+import axios from 'axios';
+import {getServerHostIP} from '../store';
 const SHOW_LOG = true;
 
 //https://stackoverflow.com/a/49701878
@@ -17,6 +19,10 @@ export const createQueryString = params => {
     return '';
   }
   return `?${queryString}`;
+};
+
+export const createPostQueryString = params => {
+  return `.${JSON.stringify(params)}`;
 };
 
 const createToken = (path, data = null) => {
@@ -46,13 +52,16 @@ const createToken = (path, data = null) => {
 
 //QR Order
 
-const createOROrderTọken = (path, data = null) => {
-  const urlFetch = getAppModeConstantValue('SERVER_HOST_IP') + path;
+const createOROrderToken = (path, data = null) => {
+  // const urlFetch = getAppModeConstantValue('SERVER_HOST_IP') + path;
+  const urlFetch = getServerHostIP() + path;
   const secretKey = '123654789';
   let token;
   if (data == null) {
     //console.log('fetch path', typeof path, typeof secretKey);
     token = hmacSHA256(path, secretKey);
+  } else {
+    token = hmacSHA256(data, secretKey);
   }
   return {
     urlFetch,
@@ -63,8 +72,7 @@ const createOROrderTọken = (path, data = null) => {
 //path
 export const apiQROrderGET = async (path, queries) => {
   const pathQuery = path + createQueryString(queries);
-  console.log('pathQuery ne', pathQuery);
-  const {urlFetch, token} = createOROrderTọken(pathQuery);
+  const {urlFetch, token} = createOROrderToken(pathQuery);
   SHOW_LOG && console.log('GET ', 'URL FETCH', urlFetch, 'TOKEN', token);
 
   const res = await fetch(urlFetch, {
@@ -95,6 +103,58 @@ export const apiQROrderGET = async (path, queries) => {
     addAlert({color: COLORS.danger, title: 'GET ERROR', message: Message});
   }
   return [];
+};
+
+export const apiQROrderPOST = async (path, body, willDisplayErr = true) => {
+  const pathQuery = path + createPostQueryString(body);
+  console.log('pathQuery ', pathQuery, 'path', path, 'body', body);
+  const {urlFetch, token} = createOROrderToken(path, pathQuery);
+
+  SHOW_LOG && console.log('POST ', urlFetch);
+
+  const res = await fetch(urlFetch, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      PartnerKey: 'UGl4ZWxTcWxiYXNl',
+      Token: token,
+    },
+    body: JSON.stringify(body),
+  });
+
+  // const url = 'http://qr-order.speedtech.vn/api/OrderPayment';
+  // //path /api/OrderPayemt
+  // const res = await axios.post(path, {
+  //   headers: {
+  //     Accept: 'application/json',
+  //     'Content-Type': 'multipart/form-data',
+  //     PartnerKey: 'UGl4ZWxTcWxiYXNl',
+  //     Token: token,
+  //   },
+  //   body: JSON.stringify(body),
+  // });
+
+  const {Status, Data, Message} = await res.json();
+  console.log('Status of POST', Status, Data, Message);
+  if (Status === 200) {
+    return Data;
+  }
+
+  if (willDisplayErr) {
+    if (isInApiResultCode(Status)) {
+      addAlert({
+        color: COLORS.warning,
+        title: `WARNING - code: ${Status}`,
+        message: Message,
+      });
+    } else {
+      addAlert({color: COLORS.danger, title: 'POST ERROR', message: Message});
+      Alert.alert('POST ERROR', Message);
+    }
+  }
+
+  throw customError(Message, {code: Status}); // POST đã có react query bắt lỗi, nên ở đây chỉ cần throw
 };
 
 //Hoang-Luu-old version

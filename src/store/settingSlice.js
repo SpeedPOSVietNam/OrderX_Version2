@@ -5,12 +5,13 @@ import {APPMODE} from '../constants/global';
 
 export const createSettingSlice = (set, get) => ({
   setting: {
-    lang: Lang.ENGLISH,
+    lang: null,
     leftHandMode: false,
     numColumns: 4,
     numRows: 5,
     selectedMenu: null,
     appMode: APPMODE.PROD,
+    serverHostIP: 'http://qr-order.speedtech.vn',
   },
   settingActions: {
     setNumColumns: numColumns =>
@@ -42,6 +43,10 @@ export const createSettingSlice = (set, get) => ({
       set(state => {
         state.setting.appMode = mode;
       }),
+    setServerHostIP: mode =>
+      set(state => {
+        state.setting.serverHostIP = mode;
+      }),
   },
 });
 
@@ -59,4 +64,6 @@ export const settingSelectors = {
   setSelectedMenu: state => state.settingActions.setSelectedMenu,
   appMode: state => state.setting.appMode,
   setAppMode: state => state.settingActions.setAppMode,
+  serverHostIP: state => state.setting.serverHostIP,
+  setServerHostIP: state => state.settingActions.setServerHostIP,
 };

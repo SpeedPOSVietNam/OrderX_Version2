@@ -7,7 +7,7 @@ export const SHAREPOS_CONSTANTS = {
     CHECK_TRANSACTION: 'CHECK_TRANSACTION',
     SETTLE: 'SETTLE',
     AUTO_INITIALIZE: 'AUTO_INITIALIZE',
-
+    VOID: 'VOID',
     // Những type dưới đây dùng chung 1 cấu trúc paxCallSharePos để gửi request (hàm executeEvent)
     SETTING: 'SETTING', //Open Initialize screen of Bank
     PRINT_LAST_SETTLEMENT: 'PRNT_SETTLE',
@@ -60,11 +60,22 @@ export const sharePosHelper = {
         AddInfo: addInfo, // [{ Content: 'Abc: test' }],
       }),
     ),
-  checkTransaction: async ({merchantTransId}) =>
+  voidTrans: async ({bankCode, merchantTransId = genTransId()}) => {
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
         merchantTransId: merchantTransId,
+        tranxType: SHAREPOS_CONSTANTS.tranxType.VOID,
+        invoiceNo: '000021',
+        bankCode: bankCode,
+      }),
+    );
+  },
+  checkTransaction: async ({merchantTransId = genTransId()}) =>
+    await shareposCall(
+      SHAREPOS_PAYMENT_SECRETKEY,
+      JSON.stringify({
+        merchantTransId: 1234,
         tranxType: SHAREPOS_CONSTANTS.tranxType.CHECK_TRANSACTION,
       }),
     ),

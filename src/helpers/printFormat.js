@@ -132,7 +132,7 @@ export const prepareBillForPrinter = ({
   });
   result += line(
     TEXT,
-    LARGE,
+    MEDIUM,
     RIGHT,
     `TOTAL: ${toCurrency(finalTotal, '.', false)}`,
   );

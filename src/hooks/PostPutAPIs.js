@@ -1,4 +1,4 @@
-import {apiPOST, apiPUT} from '../helpers/fetch';
+import {apiQROrderPOST, apiPUT} from '../helpers/fetch';
 import {
   getClientID,
   getTableID,
@@ -19,11 +19,11 @@ export const deviceLogin = async () =>
     {Action: 'DeviceLogin'},
   );
 
-export const clientLogin = async ({AccessCode}) =>
-  await apiPOST('/api/ClientAppAuth', {
-    AccessCode,
-    PartnerGUID: getAppModeConstantValue('APP_CLIENT').guid,
-  });
+// export const clientLogin = async ({AccessCode}) =>
+//   await apiPOST('/api/ClientAppAuth', {
+//     AccessCode,
+//     PartnerGUID: getAppModeConstantValue('APP_CLIENT').guid,
+//   });
 export const waiterLogin = async ({waiterID, VenueGUID = getVenueGUID()}) =>
   await apiPUT(
     '/api/ClientAppAuth',
@@ -34,3 +34,16 @@ export const waiterLogin = async ({waiterID, VenueGUID = getVenueGUID()}) =>
     },
     {Action: 'AccountLogin'},
   );
+
+export const confirmCloseTable = async ({
+  Transact,
+  EmpNum,
+  Tender,
+  MethodNum,
+}) =>
+  await apiQROrderPOST('/api/OrderPayment', {
+    Transact: Transact,
+    EmpNum: EmpNum,
+    Tender: Tender,
+    MethodNum: MethodNum,
+  });

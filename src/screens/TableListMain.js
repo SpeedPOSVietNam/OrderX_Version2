@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
+  ActivityIndicator,
   RefreshControl,
 } from 'react-native';
 import icons from '../constants/icons';
@@ -14,7 +15,7 @@ import {COLORS, FONTS, SIZES} from '../constants/theme';
 import {PasswordInputWithRevealButton, AppVersion} from '../components';
 import {SCREENS} from './SCREENS';
 import {fetchPostHeader, useRelativeTableNo, useTable} from '../hooks';
-import {getWaiterID} from '../store';
+import {authSelectors, useStore, uiSelectors, getWaiterID} from '../store';
 
 export const TableListMain = ({navigation}) => {
   const [allTableData, setAllTableData] = useState();
@@ -22,25 +23,24 @@ export const TableListMain = ({navigation}) => {
   const [finalData, setFinalData] = useState();
   const [TableNo, setTableNo] = useState();
   const [duplicateTransact, setDuplicateTransact] = useState([]);
-
+  const [refreshing, setRefreshing] = useState(false);
+  const setWaiterID = useStore(authSelectors.setWaiterID);
   const selectedTable = useRelativeTableNo({
     queryTbNum: TableNo,
   });
 
   const fetchallTable = useRelativeTableNo({});
-  const allTable = () => {
-    fetchallTable
-      .then(res => setAllTableData(res))
-      .catch(err => console.log(err));
+
+  const allTable = async () => {
+    const res = await fetchallTable;
+    return setAllTableData(res);
   };
   const fetchposHeader = fetchPostHeader({});
 
-  const posHeader = () => {
-    fetchposHeader
-      .then(res => setAllPosHeader(res))
-      .catch(err => console.log(err));
+  const posHeader = async () => {
+    const res = await fetchposHeader;
+    return setAllPosHeader(res);
   };
-
   const FetchTableData = () => {
     if (allTableData !== undefined && allPosHeader !== undefined) {
       for (let i = 0; i < allTableData.length; i++) {
@@ -57,37 +57,76 @@ export const TableListMain = ({navigation}) => {
         }
       }
     }
+    setRefreshing(false);
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    allTable();
+    posHeader();
+    //setRefreshing(false);
+    FetchTableData();
+  };
+
+  // get data
   useEffect(() => {
-    // console.log(
-    //   'TableNo == null || TableNo == undefined',
-    //   TableNo == null || TableNo == undefined,
-    // );
-    if (TableNo == null || TableNo == undefined) {
-      console.log('helooooooo');
-      allTable();
-      posHeader();
-      FetchTableData();
-    }
+    setDuplicateTransact([]);
+    allTable();
+    posHeader();
+    FetchTableData();
   }, [TableNo]);
 
+  console.log('TableNo ne', TableNo);
+
   useEffect(() => {
-    if (TableNo !== null || TableNo !== undefined) {
+    if (
+      allPosHeader?.some(value => value.TABLENUM == TableNo) &&
+      TableNo == null
+    ) {
       setDuplicateTransact([]);
       posHeader();
       FetchTableData();
     }
-  }, [allTableData, TableNo]);
+    if (
+      allPosHeader?.some(value => value.TABLENUM == TableNo) &&
+      TableNo !== null
+    ) {
+      setDuplicateTransact([]);
+      posHeader();
+      FetchTableData();
+    }
+    if (
+      !allPosHeader?.some(value => value.TABLENUM == TableNo) &&
+      TableNo !== null
+    ) {
+      setFinalData(allTableData);
+      // setDuplicateTransact([]);
+      // posHeader();
+      // FetchTableData();
+    }
+    if (TableNo == null || TableNo == undefined) {
+      setDuplicateTransact([]);
+      posHeader();
+      FetchTableData();
+    }
+  }, [allTableData]);
 
-  const checkTableValue = () => {
-    if (TableNo !== '') {
-      setAllTableData();
-      selectedTable
-        .then(result => {
-          setAllTableData(result);
-        })
-        .catch(err => console.log(err));
+  // console.log(
+  //   ' allPosHeader?.some(value => value.TABLENUM) == TableNo',
+  //   allPosHeader?.some(value => value.TABLENUM == TableNo) && TableNo !== null,
+  // );
+  // console.log(
+  //   ' allPosHeader?.some(value => value.TABLENUM) == TableNo',
+  //   allPosHeader?.some(value => value.TABLENUM == TableNo) && TableNo == null,
+  // );
+
+  // console.log('TableNo', TableNo == null);
+
+  const checkTableValue = async () => {
+    if (TableNo !== null) {
+      setAllTableData('');
+      const res = await selectedTable;
+      return await setAllTableData(res);
     }
   };
 
@@ -177,15 +216,20 @@ export const TableListMain = ({navigation}) => {
       </TouchableOpacity>
     );
     return (
-      <FlatList
-        data={finalData}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index}
-        // refreshControl={<RefreshControl
-        //   refreshing={refreshing}
-        //   onRefresh={onRefresh}
-        // />}
-      />
+      <View>
+        {refreshing ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            data={finalData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+        )}
+      </View>
     );
   };
   return (
@@ -217,7 +261,9 @@ export const TableListMain = ({navigation}) => {
             <Image source={icons.history} style={{width: 39, height: 39}} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate(SCREENS.EnterWaiter)}>
+            onPress={() => {
+              navigation.navigate(SCREENS.EnterWaiter), setWaiterID('');
+            }}>
             <Image source={icons.logout} style={{width: 39, height: 39}} />
           </TouchableOpacity>
         </View>
