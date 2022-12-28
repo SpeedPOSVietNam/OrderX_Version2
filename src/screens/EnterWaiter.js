@@ -56,8 +56,8 @@ export const EnterWaiter = ({navigation}) => {
     } else if (waiter[0].IsActive == 0) {
       setCheckLoading(false);
       Alert.alert(
-        'Account deactived',
-        'Contact your administrator for more detail.',
+        t('accountDeactived'),
+        t('contactYourAdministratorForMoreDetail'),
       );
     } else {
       setCheckLoading(false);
@@ -69,7 +69,7 @@ export const EnterWaiter = ({navigation}) => {
   const checkPassword = () => {
     setCheckLoading(true);
     if (waiterCode === '') {
-      Alert.alert('ERROR', 'Missing Waiter Code!');
+      Alert.alert(t('warning'), t('missingWaiterCode!'));
       return;
     }
     Keyboard.dismiss();
@@ -77,7 +77,7 @@ export const EnterWaiter = ({navigation}) => {
     checkPasswordAsync()
       .then(() => {})
       .catch(e => {
-        Alert.alert('ERROR', e.message), setCheckLoading(false);
+        Alert.alert(t('error'), e.message), setCheckLoading(false);
       });
   };
 

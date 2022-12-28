@@ -27,6 +27,7 @@ import moment from 'moment';
 import {roundDecimal, toCurrency} from '../helpers/utils';
 import {SCREENS} from './SCREENS';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {useTranslation} from 'react-i18next';
 {
   /* moment.lang('en', {
     longDateFormat : {
@@ -43,6 +44,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 }); */
 }
 export const OrderHistory = ({navigation}) => {
+  const {t} = useTranslation();
   const [isFromDatePickerVisible, setFromDatePickerVisibility] =
     useState(false);
   const [isToDatePickerVisible, setToDatePickerVisibility] = useState(false);
@@ -129,7 +131,7 @@ export const OrderHistory = ({navigation}) => {
     // console.log('YEAR fetch', moment(date).format('YYYY'));
     if (finalToDate !== undefined) {
       if (moment(date).format(format) > finalToDate) {
-        Alert.alert('From Date cannot be exceed than To date');
+        Alert.alert(t('fromDateCannotBeExceedThanToDate'));
         setFromDate();
         setFinalData();
         hideDatePicker();
@@ -149,7 +151,7 @@ export const OrderHistory = ({navigation}) => {
     const format = 'YYYY-MM-DD';
     if (finalFromDate !== undefined) {
       if (moment(date).format(format) < finalFromDate) {
-        Alert.alert('To Date cannot be deceed than From date');
+        Alert.alert(t('toDateCannotBeDeceedThanFromDate'));
         setToDate();
         setFinalData();
         hideDatePicker();
@@ -186,7 +188,7 @@ export const OrderHistory = ({navigation}) => {
               flexDirection: 'row',
             }}>
             <Image source={icons.paidBill} />
-            <Text style={{fontWeight: 'bold', left: 10}}>Bill ID</Text>
+            <Text style={{fontWeight: 'bold', left: 10}}>{t('billID')}</Text>
           </View>
 
           <Text>{item.Transact}</Text>
@@ -206,7 +208,7 @@ export const OrderHistory = ({navigation}) => {
               flexDirection: 'row',
             }}>
             <Image source={icons.coffeeTable} />
-            <Text style={{fontWeight: 'bold', left: 10}}>Table No.</Text>
+            <Text style={{fontWeight: 'bold', left: 10}}>{t('tableNo')}</Text>
           </View>
           <Text>{item.TableNum}</Text>
         </View>
@@ -223,7 +225,7 @@ export const OrderHistory = ({navigation}) => {
           }}>
           <View style={{flexDirection: 'row'}}>
             <Image source={icons.clock} />
-            <Text style={{fontWeight: 'bold', left: 10}}>Close time</Text>
+            <Text style={{fontWeight: 'bold', left: 10}}>{t('closeTime')}</Text>
           </View>
           <Text>{moment(item.TimeEnd).format('YYYY-MM-DD')}</Text>
         </View>
@@ -240,7 +242,9 @@ export const OrderHistory = ({navigation}) => {
               flexDirection: 'row',
             }}>
             <Image source={icons.paymentMethod} />
-            <Text style={{fontWeight: 'bold', left: 10}}>Payment Method</Text>
+            <Text style={{fontWeight: 'bold', left: 10}}>
+              {t('paymentMethod')}
+            </Text>
           </View>
 
           <View
@@ -270,14 +274,14 @@ export const OrderHistory = ({navigation}) => {
               <Text>
                 {item.Descript1 == 'CREDIT CARD'
                   ? 'Card'
-                  : item.Descript1 == 'CASH'
+                  : item.Descript1 == t('cash')
                   ? 'Cash'
                   : ''}
               </Text>
               <Text>
                 {item.Descript1 == 'CREDIT CARD'
                   ? toCurrency(item.Tender1)
-                  : item.Descript1 == 'CASH'
+                  : item.Descript1 == t('card')
                   ? toCurrency(item.Tender1)
                   : ''}
               </Text>
@@ -285,7 +289,7 @@ export const OrderHistory = ({navigation}) => {
 
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={{fontWeight: 'bold'}}>Total</Text>
+              <Text style={{fontWeight: 'bold'}}>{t('total')}</Text>
               <Text>{toCurrency(item.FinalTotal)}</Text>
             </View>
           </View>
@@ -302,7 +306,10 @@ export const OrderHistory = ({navigation}) => {
           }}>
           <View style={{flexDirection: 'row'}}>
             <Image source={icons.query} />
-            <Text style={{fontWeight: 'bold', left: 10}}>Payment Status</Text>
+            <Text style={{fontWeight: 'bold', left: 10}}>
+              {' '}
+              {t('paymentStatus')}
+            </Text>
           </View>
 
           <Image source={icons.success20px} />
@@ -361,7 +368,7 @@ export const OrderHistory = ({navigation}) => {
               fontWeight: 'bold',
               fontSize: SIZES.body2,
             }}>
-            Order History
+            {t('orderHistoty')}
           </Text>
           <Text />
         </View>
@@ -375,7 +382,7 @@ export const OrderHistory = ({navigation}) => {
             <PasswordInputWithRevealButton
               paramIsReveal={true}
               RighImageSrc1={icons.arrowDown}
-              textHolder={finalFromDate ? finalFromDate : 'From Date'}
+              textHolder={finalFromDate ? finalFromDate : t('fromDate')}
               value={''}
               onChangeText={''}
               disable={true}
@@ -387,7 +394,7 @@ export const OrderHistory = ({navigation}) => {
             <PasswordInputWithRevealButton
               paramIsReveal={true}
               RighImageSrc1={icons.arrowDown}
-              textHolder={finalToDate ? finalToDate : 'To Date'}
+              textHolder={finalToDate ? finalToDate : t('toDate')}
               value={''}
               onChangeText={''}
               disable={true}
@@ -414,7 +421,7 @@ export const OrderHistory = ({navigation}) => {
         }}>
         <MyButton
           iconStyle={{tintColor: COLORS.white}}
-          title={'Search'}
+          title={t('search')}
           titleStyle={{
             ...FONTS.h4,
             color: COLORS.white,

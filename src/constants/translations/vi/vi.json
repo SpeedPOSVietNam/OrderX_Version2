@@ -3,36 +3,66 @@
         "loading": "Đang tải",
         "search": "Tìm kiếm",
         "total": "Tổng cộng",
+
+        "setting":"Cài đặt",
+        "switchLanguage":"Chuyển ngôn ngữ",
+        "switchAppMode":"Đổi chế độ APP",
+        "production":"Production",
+        "development":"Development",
+        "serverHostIP":"Server Host IP",
+        "sharePosTestScreen":"Màn hình test SharePos",
+        "open":"Mở",
+        "english":"Tiếng anh",
+        "vietnam":"Tiếng việt",
+
         "haveaNiceDay": "Chúc bạn một ngày tốt lành!",
         "enterPassword": "Nhập mật khẩu",
         "waiterCode":"Mã nhân viên",
         "loginFailed":"Đăng nhập thất bại",
         "incorrectWaiterCode":"Sai mã nhân viên",
         "login": "Đăng nhập",
+        "error":"Lỗi!",
+        "missingWaiterCode":"Chưa nhập mã waiter",
+        "accountDeactived":"Tài khoản bị vô hiệu hoá",
+        "contactYourAdministratorForMoreDetail":"Hãy liên lạc với quản trị viên để biết thêm chi tiết",
+
+        "warning":"Cảnh báo!",
+        "youCanNotPayForEmptyTable":"Bạn không thể thanh toán cho bàn trống.",
+        "itBelongsToOtherWaiter":"Bàn này thuộc phụ trách nhân viên khác.",
         "searchIDforpayment": "Tìm mã bàn",
         "tableID": "Mã bàn",
         "occupied": "Có khách",
         "serving": "Đang phục vụ",
         "empty": "Trống",
+
+
         "orderHistoty": "Lịch sử",
         "fromDate": "Từ ngày",
         "toDate": "Tới ngày",
-
-
         "billID": "Mã Bill",
         "tableNo": "Bàn số",
         "closeTime": "Giờ đóng",
         "paymentMethod": "Phương pháp thanh toán",
         "paymentStatus": "Trạng thái thanh toán",
+
         "payment": "Thanh toán",
-        "table": "BÀN",
+        "table": "Bàn",
         "bill": "Hoá đơn",
         "cash": "Tiền mặt",
         "card": "Thẻ",
-        "net": "Net",
+
+        "net": "NET",
         "vat": "VAT",
         "amountDue": "Còn lại",
+        "change":"Trả lại",
         "back": "Trở về",
-        "apply": "Áp dụng"
+        "apply": "Áp dụng",
+        "paid":"Đã thanh toán",
+        "paymentSuccessful":"Thanh toán thành công!",
+        "inputValueMustBeEqualTotalOfTheBill":"Số tiền nhập vào phải bằng tổng tiền bill",
+        "pleaseChooseYourPaymentMethod":"Xin hãy chọn phương pháp thanh toán",
+        "pleaseChooseSpecificTransaction":"Xin hãy chọn giao dịch cụ thể",
+        "fromDateCannotBeExceedThanToDate":"Từ ngày không thể lớn hơn tới ngày",
+        "toDateCannotBeDeceedThanFromDate":"Tới ngày không thẻ nhỏ hơn từ ngày"
     }
   }

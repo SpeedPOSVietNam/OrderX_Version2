@@ -1,5 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {COLORS} from '../../constants/theme';
 import {sharePosHelper, SHAREPOS_CONSTANTS} from '../../helpers/sharePosHelper';
 
 export const SharePosTestScreen = () => {
@@ -9,6 +10,8 @@ export const SharePosTestScreen = () => {
   // console.log('handleSendIntent', result);
 
   const [log, setLog] = useState('');
+  //const [invceNo, setInvceNo] = useState();
+  const invceNo = useRef(null);
 
   const textInputRef = useRef(null);
   useEffect(() => {
@@ -71,12 +74,13 @@ export const SharePosTestScreen = () => {
   const autoInitialize = async () => {
     try {
       const result = await sharePosHelper.autoInitialize({
+        thirdPartyId: 'spd',
         bankCode: 'EIB',
-        refNo: '00001900',
+        refNo: '28122022',
         ip: '113.161.81.81',
         port: '11191',
         nii: '004',
-        enableEncrypt: 'true',
+        enableEncrypt: 1,
         typeEncrypt: SHAREPOS_CONSTANTS.encryptType.HEXHL,
       });
       addLog(result);
@@ -113,6 +117,7 @@ export const SharePosTestScreen = () => {
     try {
       let result = await sharePosHelper.voidTrans({
         bankCode: 'EIB',
+        invoiceNo: invceNo.current,
       });
       addLog(result);
     } catch (e) {
@@ -122,7 +127,7 @@ export const SharePosTestScreen = () => {
 
   const checkTransaction = async () => {
     try {
-      let result = await sharePosHelper.checkTransaction({});
+      let result = await sharePosHelper.checkTransaction({bankCode: 'EIB'});
       addLog(result);
     } catch (e) {
       addLog('[ERROR] ' + e);
@@ -144,10 +149,32 @@ export const SharePosTestScreen = () => {
         <Text>Payment</Text>
       </TouchableOpacity>
 
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <TextInput
+          style={{
+            height: 50,
+            width: 100,
+            backgroundColor: COLORS.lightGray2,
+          }}
+          keyboardType="number-pad"
+          onChangeText={value => (invceNo.current = value)}
+        />
+        <TouchableOpacity
+          onPress={voidTrans}
+          style={{padding: 10, backgroundColor: '#ddd'}}>
+          <Text>Void</Text>
+        </TouchableOpacity>
+      </View>
+
       <TouchableOpacity
-        onPress={voidTrans}
+        onPress={checkTransaction}
         style={{padding: 10, backgroundColor: '#ddd'}}>
-        <Text>Void</Text>
+        <Text>SPECIAL TRANS</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -189,11 +216,6 @@ export const SharePosTestScreen = () => {
         onPress={printLastTrans}
         style={{padding: 10, backgroundColor: '#ddd'}}>
         <Text>Print last transaction</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={checkTransaction}
-        style={{padding: 10, backgroundColor: '#ddd'}}>
-        <Text>Check transaction</Text>
       </TouchableOpacity>
     </View>
   );

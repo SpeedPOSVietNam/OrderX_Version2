@@ -16,8 +16,10 @@ import {PasswordInputWithRevealButton, AppVersion} from '../components';
 import {SCREENS} from './SCREENS';
 import {fetchPostHeader, useRelativeTableNo, useTable} from '../hooks';
 import {authSelectors, useStore, uiSelectors, getWaiterID} from '../store';
+import {useTranslation} from 'react-i18next';
 
 export const TableListMain = ({navigation}) => {
+  const {t} = useTranslation();
   const [allTableData, setAllTableData] = useState();
   const [allPosHeader, setAllPosHeader] = useState();
   const [finalData, setFinalData] = useState();
@@ -76,35 +78,24 @@ export const TableListMain = ({navigation}) => {
     FetchTableData();
   }, [TableNo]);
 
-  console.log('TableNo ne', TableNo);
-
   useEffect(() => {
-    if (
-      allPosHeader?.some(value => value.TABLENUM == TableNo) &&
-      TableNo == null
-    ) {
+    if (allPosHeader?.some(value => value.TABLENUM == TableNo) && !TableNo) {
       setDuplicateTransact([]);
       posHeader();
       FetchTableData();
     }
-    if (
-      allPosHeader?.some(value => value.TABLENUM == TableNo) &&
-      TableNo !== null
-    ) {
+    if (allPosHeader?.some(value => value.TABLENUM == TableNo) && TableNo) {
       setDuplicateTransact([]);
       posHeader();
       FetchTableData();
     }
-    if (
-      !allPosHeader?.some(value => value.TABLENUM == TableNo) &&
-      TableNo !== null
-    ) {
+    if (!allPosHeader?.some(value => value.TABLENUM == TableNo) && !TableNo) {
       setFinalData(allTableData);
       // setDuplicateTransact([]);
       // posHeader();
       // FetchTableData();
     }
-    if (TableNo == null || TableNo == undefined) {
+    if (!TableNo) {
       setDuplicateTransact([]);
       posHeader();
       FetchTableData();
@@ -155,9 +146,9 @@ export const TableListMain = ({navigation}) => {
               TransactArray: filterDulplicateTrans(item.TableNum),
             });
           } else if (item.WHOSTART == null) {
-            Alert.alert('ERROR', 'You can not pay for empty table.');
+            Alert.alert(t('warning'), t('youCanNotPayForEmptyTable'));
           } else if (item.WHOSTART && item.WHOSTART !== getWaiterID().EmpNum) {
-            Alert.alert('ERROR', 'It belongs to other waiter.');
+            Alert.alert(t('warning'), t('itBelongsToOtherWaiter'));
           }
         }}
         style={{
@@ -188,7 +179,7 @@ export const TableListMain = ({navigation}) => {
               fontWeight: 'bold',
               fontSize: SIZES.h4,
             }}>
-            Table ID:
+            {t('tableID')}
           </Text>
           <Text
             style={{
@@ -205,11 +196,11 @@ export const TableListMain = ({navigation}) => {
               fontSize: SIZES.h4,
             }}>
             {item.WHOSTART == getWaiterID().EmpNum
-              ? 'Occupied'
+              ? t('occupied')
               : item.WHOSTART && item.WHOSTART !== getWaiterID().EmpNum
-              ? 'Serving'
+              ? t('serving')
               : item.WHOSTART == null
-              ? 'Empty'
+              ? t('empty')
               : ''}
           </Text>
         </View>
@@ -279,14 +270,14 @@ export const TableListMain = ({navigation}) => {
         <PasswordInputWithRevealButton
           paramIsReveal={true}
           LeftImageSrc={icons.search}
-          textHolder={'Search ID for payment'}
+          textHolder={t('searchIDforpayment')}
           keyboardType={'number-pad'}
           value={TableNo}
           onChangeText={value => setTableNo(value)}
         />
         <MyButton
           iconStyle={{tintColor: COLORS.white}}
-          title={'Search'}
+          title={t('search')}
           titleStyle={{
             ...FONTS.h4,
             color: COLORS.white,

@@ -27,8 +27,10 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {CustomAlert} from '../components';
+import {useTranslation} from 'react-i18next';
 
 export const Payment = ({navigation, route}) => {
+  const {t} = useTranslation();
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const {TableNum, TRANSACT, TransactArray} = route.params;
@@ -44,8 +46,7 @@ export const Payment = ({navigation, route}) => {
       value: '',
     },
   ]);
-  const [cashCheck, setCashCheck] = useState(0);
-  const [cardCheck, setCardCheck] = useState();
+  const [cardCheck, setCardCheck] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [printReceiptCount, setPrintReceiptCount] = useState(0);
   const [paidTrans, setPaidTrans] = useState([]);
@@ -288,7 +289,7 @@ export const Payment = ({navigation, route}) => {
         <Image source={item.icon} />
         <Text
           style={{color: textColor, fontWeight: 'bold', fontFamily: 'Arial'}}>
-          {item.Descript}
+          {item.Descript == 'CASH' ? t('cash') : t('card')}
         </Text>
       </TouchableOpacity>
     );
@@ -322,12 +323,13 @@ export const Payment = ({navigation, route}) => {
                 trans: selectedTrans,
                 value:
                   posHdrByTrans[0].FINALTOTAL - posHdrByTrans[0].FINALTOTAL,
+                cash: posHdrByTrans[0].FINALTOTAL,
               },
             ]);
             // setAmountLeft(
             //   posHdrByTrans[0].FINALTOTAL - posHdrByTrans[0].FINALTOTAL,
             // );
-            notifyMessage('Payment Successful!');
+            notifyMessage(t('paymentSuccessful'));
             getCloseTrancsaction(posHdrByTrans[0].FINALTOTAL);
           }
           //TH2: Thanh toán dư
@@ -338,10 +340,11 @@ export const Payment = ({navigation, route}) => {
               {
                 trans: selectedTrans,
                 value: Number(inputValue) - posHdrByTrans[0].FINALTOTAL,
+                cash: Number(inputValue),
               },
             ]);
             // setAmountLeft(Number(inputValue) - posHdrByTrans[0].FINALTOTAL);
-            notifyMessage('Payment Successful!');
+            notifyMessage(t('paymentSuccessful'));
             getCloseTrancsaction(posHdrByTrans[0].FINALTOTAL);
           }
           //TH3: Thanh toán nhiều dạng khác nhau
@@ -357,7 +360,7 @@ export const Payment = ({navigation, route}) => {
             // if (amountLeft !== undefined) {
             //   setAmountLeft(amountLeft - Number(inputValue));
             // }
-            notifyMessage('Input value must be equal total of the bill');
+            notifyMessage(t('inputValueMustBeEqualTotalOfTheBill'));
             //Alert.alert('Caution', 'Input value must be equal the total');
           }
           //TH4 Trường hợp đang thanh toán 1 phần của bill và muốn thanh toán số còn lại
@@ -369,12 +372,9 @@ export const Payment = ({navigation, route}) => {
               Number(inputValue) !== 0) ||
             Number(inputValue) > posHdrByTrans[0].FINALTOTAL
           ) {
-            setCardCheck(Number(inputValue));
-            // Alert.alert(
-            //   'Caution',
-            //   'If you want to pay by card! Make sure your input is equal total of the bill',
-            // );
-            notifyMessage('Input value must be equal total of the bill');
+            //setCardCheck(Number(inputValue));
+
+            notifyMessage(t('inputValueMustBeEqualTotalOfTheBill'));
           }
           if (
             Number(inputValue) == 0 ||
@@ -385,10 +385,10 @@ export const Payment = ({navigation, route}) => {
         }
       } else {
         if (paymentType == undefined) {
-          Alert.alert('Empty', 'Please choose your payment method');
+          Alert.alert(t('empty'), t('pleaseChooseYourPaymentMethod'));
         }
         if (selectedTrans == undefined) {
-          Alert.alert('Empty', 'Please choose specific transaction');
+          Alert.alert(t('empty'), t('pleaseChooseSpecificTransaction'));
         }
       }
     };
@@ -405,7 +405,7 @@ export const Payment = ({navigation, route}) => {
             // onPress={() => handlePayment()}
             disable={true}
             iconStyle={{tintColor: COLORS.white}}
-            title={'PAID'}
+            title={t('paid')}
             titleStyle={{
               ...FONTS.h4,
               color: COLORS.white,
@@ -422,7 +422,7 @@ export const Payment = ({navigation, route}) => {
           <MyButton
             onPress={() => handlePayment()}
             iconStyle={{tintColor: COLORS.white}}
-            title={'APPLY'}
+            title={t('apply')}
             titleStyle={{
               ...FONTS.h4,
               color: COLORS.white,
@@ -461,11 +461,20 @@ export const Payment = ({navigation, route}) => {
 
     if (result.Code === '200') {
       setPaidTrans(pre => [...pre, selectedTrans]);
+      setPaidTransAmountLeft(pre => [
+        ...pre,
+        {
+          trans: selectedTrans,
+          value: posHdrByTrans[0].FINALTOTAL - posHdrByTrans[0].FINALTOTAL,
+          card: posHdrByTrans[0].FINALTOTAL,
+        },
+      ]);
+      setCardCheck('');
       getCloseTrancsaction(posHdrByTrans[0].FINALTOTAL);
 
       console.log('Result of Card payment:', JSON.stringify(result));
     } else {
-      setCardCheck(), setPaymentType(), Alert.alert('ERROR', result.Desc);
+      setCardCheck(), setPaymentType(), Alert.alert(t('error'), result.Desc);
       console.log('Result of Card payment:', JSON.stringify(result));
     }
   };
@@ -578,6 +587,7 @@ export const Payment = ({navigation, route}) => {
       // if (amountLeft == 0) {
       //   setPaidTrans(pre => [...pre, selectedTrans]);
       // }
+      console.log('modal visible up');
       setModalVisible(true);
     }
 
@@ -586,21 +596,20 @@ export const Payment = ({navigation, route}) => {
     }
   }, [amountLeft, printReceiptCount, change, paidTrans]);
 
-  // console.log(
-  //   '!paidTrans.includes(selectedTrans',
-  //   !paidTrans.includes(selectedTrans),
-  // );
+  // console.log('paidTrans', paidTrans);
+  // console.log('card check', cardCheck);
+  // console.log('paidTransAmountLeft', paidTransAmountLeft);
   //handle Card Pay
   useEffect(() => {
-    if (paymentType == 'CARD' && cardCheck !== undefined) {
+    if (paymentType == 'CARD' && cardCheck) {
       handleMiniPosPay({
         amount: cardCheck,
         addInfo: [],
-        payMethodID: 1234,
-        payTransactionID: 1234,
+        // payMethodID: 1234,
+        // payTransactionID: 1234,
       });
     }
-  }, [cardCheck, paymentType]);
+  }, [cardCheck]);
 
   return (
     <View
@@ -696,7 +705,8 @@ export const Payment = ({navigation, route}) => {
               fontSize: SIZES.body2,
               fontFamily: 'Arial',
             }}>
-            Payment - Table {JSON.stringify(TableNum)} - Bill
+            {t('payment')} - {t('table')} {JSON.stringify(TableNum)} -{' '}
+            {t('bill')}
           </Text>
           <Text />
         </View>
@@ -735,7 +745,7 @@ export const Payment = ({navigation, route}) => {
                   justifyContent: 'space-between',
                 }}>
                 <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
-                  NET
+                  {t('net')}
                 </Text>
                 <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
                   {posHdrByTrans ? toCurrency(posHdrByTrans[0].NETTOTAL) : ''}
@@ -747,7 +757,7 @@ export const Payment = ({navigation, route}) => {
                   justifyContent: 'space-between',
                 }}>
                 <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
-                  VAT
+                  {t('vat')}
                 </Text>
                 <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
                   {posHdrByTrans
@@ -784,7 +794,7 @@ export const Payment = ({navigation, route}) => {
                     fontWeight: 'bold',
                     fontFamily: 'Arial',
                   }}>
-                  TOTAL
+                  {t('total')}
                 </Text>
                 <Text
                   style={{
@@ -804,10 +814,23 @@ export const Payment = ({navigation, route}) => {
                   justifyContent: 'space-between',
                 }}>
                 <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
-                  Cash
+                  {t('cash')}
                 </Text>
                 <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
-                  {toCurrency(cashCheck)}
+                  {change.some(val => val.trans == selectedTrans)
+                    ? toCurrency(
+                        change.filter(val => val.trans == selectedTrans)[0]
+                          .cash,
+                      )
+                    : paidTransAmountLeft.some(
+                        val => val.trans == selectedTrans,
+                      )
+                    ? toCurrency(
+                        paidTransAmountLeft.filter(
+                          val => val.trans == selectedTrans,
+                        )[0].cash,
+                      )
+                    : toCurrency('')}
                 </Text>
               </View>
 
@@ -817,11 +840,17 @@ export const Payment = ({navigation, route}) => {
                   justifyContent: 'space-between',
                 }}>
                 <Text style={{color: COLORS.black, fontFamily: 'Arial'}}>
-                  Card
+                  {t('card')}
                 </Text>
                 <Text style={{color: COLORS.black}}>
                   {' '}
-                  {toCurrency(cardCheck)}
+                  {paidTransAmountLeft.some(val => val.trans == selectedTrans)
+                    ? toCurrency(
+                        paidTransAmountLeft.filter(
+                          val => val.trans == selectedTrans,
+                        )[0].card,
+                      )
+                    : toCurrency('')}
                 </Text>
               </View>
               {/* change[1].trans == selectedTrans  */}
@@ -844,8 +873,8 @@ export const Payment = ({navigation, route}) => {
                     fontFamily: 'Arial',
                   }}>
                   {change.some(val => val.trans == selectedTrans)
-                    ? 'Change'
-                    : 'Amount Due'}
+                    ? t('change')
+                    : t('amountDue')}
                 </Text>
                 <Text
                   style={{
@@ -925,7 +954,7 @@ export const Payment = ({navigation, route}) => {
                   color: COLORS.back,
                   textAlign: 'center',
                 }}>
-                BACK
+                {t('back')}
               </Text>
             </TouchableOpacity>
           </View>

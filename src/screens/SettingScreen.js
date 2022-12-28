@@ -12,7 +12,6 @@ import {APPMODE} from '../constants/global';
 import {COLORS, FONTS, SIZES} from '../constants/theme';
 // import {trackEvent, TRACK_EVENT_NAME} from '../helpers/codepush';
 import {addAlert, settingSelectors, useStore} from '../store';
-import {SCREENS} from './SCREENS';
 import {SharePosTestScreen} from './test/SharePosTestScreen';
 import {MyButton} from '../components';
 import icons from '../constants/icons';
@@ -65,11 +64,6 @@ export const SettingScreen = ({navigation}) => {
   );
   const switchAppMode = () => {
     const newAppMode = appMode === APPMODE.DEV ? APPMODE.PROD : APPMODE.DEV;
-
-    Alert.alert(
-      'Switch app mode',
-      `Are you sure to switch app mode to ${newAppMode}?`,
-    );
     setAppMode(newAppMode);
   };
   return (
@@ -81,7 +75,7 @@ export const SettingScreen = ({navigation}) => {
           textAlign: 'center',
           margin: SIZES.padding,
         }}>
-        Setting
+        {t('setting')}
       </Text>
 
       <View style={{flex: 1}}>
@@ -92,7 +86,7 @@ export const SettingScreen = ({navigation}) => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Text style={{...FONTS.body4}}>Switch Language</Text>
+          <Text style={{...FONTS.body4}}>{t('switchLanguage')}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -100,7 +94,7 @@ export const SettingScreen = ({navigation}) => {
               alignItems: 'center',
             }}>
             <SettingButton
-              text={'English'}
+              text={t('english')}
               onPress={() => {
                 setlang('en');
                 setLanguage('en');
@@ -108,7 +102,7 @@ export const SettingScreen = ({navigation}) => {
               Color={currentLanguage == 'en' ? COLORS.info : COLORS.black}
             />
             <SettingButton
-              text={'VietNam'}
+              text={t('vietnam')}
               onPress={() => {
                 setlang('vi');
                 setLanguage('vi');
@@ -119,13 +113,13 @@ export const SettingScreen = ({navigation}) => {
         </View>
 
         <SettingButton
-          title="Switch app mode"
-          text={appMode === APPMODE.DEV ? 'Development' : 'Production'}
+          title={t('switchAppMode')}
+          text={appMode === APPMODE.DEV ? t('development') : t('production')}
           onPress={switchAppMode}
         />
         <SettingItem
           icon={icons.flash_on}
-          text={'Server Host IP'}
+          text={t('serverHostIP')}
           rightComponent={
             <View style={{flex: 1, height: 100}}>
               <TextInput
@@ -173,8 +167,8 @@ export const SettingScreen = ({navigation}) => {
           }
         />
         <SettingButton
-          title="SharePos Test Screen"
-          text="Open"
+          title={t('sharePosTestScreen')}
+          text={t('open')}
           onPress={() => navigation.navigate(SharePosTestScreen)}
         />
       </View>
@@ -189,7 +183,7 @@ export const SettingScreen = ({navigation}) => {
         }}>
         <Text
           style={{...FONTS.body3, color: COLORS.white, textAlign: 'center'}}>
-          Back
+          {t('back')}
         </Text>
       </TouchableOpacity>
     </SafeAreaView>

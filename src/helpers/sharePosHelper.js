@@ -8,6 +8,7 @@ export const SHAREPOS_CONSTANTS = {
     SETTLE: 'SETTLE',
     AUTO_INITIALIZE: 'AUTO_INITIALIZE',
     VOID: 'VOID',
+    TOTAL_TRANX: 'TOTAL_TRANX',
     // Những type dưới đây dùng chung 1 cấu trúc paxCallSharePos để gửi request (hàm executeEvent)
     SETTING: 'SETTING', //Open Initialize screen of Bank
     PRINT_LAST_SETTLEMENT: 'PRNT_SETTLE',
@@ -46,6 +47,7 @@ export const sharePosHelper = {
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
+        thirdPartyId: 'SPD',
         merchantTransId: merchantTransId,
         tranxType: SHAREPOS_CONSTANTS.tranxType.SALE,
         acqrID: SHAREPOS_CONSTANTS.acqrID.SaleWithBankMerchant,
@@ -60,30 +62,37 @@ export const sharePosHelper = {
         AddInfo: addInfo, // [{ Content: 'Abc: test' }],
       }),
     ),
-  voidTrans: async ({bankCode, merchantTransId = genTransId()}) => {
+  voidTrans: async ({bankCode, invoiceNo, merchantTransId = genTransId()}) => {
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
+        thirdPartyId: 'SPD',
         merchantTransId: merchantTransId,
         tranxType: SHAREPOS_CONSTANTS.tranxType.VOID,
-        invoiceNo: '000021',
+        invoiceNo: invoiceNo,
         bankCode: bankCode,
       }),
     );
   },
-  checkTransaction: async ({merchantTransId = genTransId()}) =>
+  checkTransaction: async ({bankCode, merchantTransId = genTransId()}) =>
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
-        merchantTransId: 1234,
-        tranxType: SHAREPOS_CONSTANTS.tranxType.CHECK_TRANSACTION,
+        thirdPartyId: 'SPD',
+        merchantTransId: merchantTransId,
+        tranxType: SHAREPOS_CONSTANTS.tranxType.PRNT_TRANX,
+        //tranxType: SHAREPOS_CONSTANTS.tranxType.CHECK_TRANSACTION,
+        bankCode: bankCode,
+        invoiceNo: '',
       }),
     ),
   settle: async ({bankCode, merchantTransId = genTransId()}) => {
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
-        merchantTransId: merchantTransId,
+        thirdPartyId: 'SPD',
+        //merchantTransId: merchantTransId,
+        merchant_transID: merchantTransId,
         tranxType: SHAREPOS_CONSTANTS.tranxType.SETTLE,
         bankCode: bankCode,
       }),
@@ -93,6 +102,7 @@ export const sharePosHelper = {
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
+        thirdPartyId: 'SPD',
         merchantTransId: merchantTransId,
         tranxType: SHAREPOS_CONSTANTS.tranxType.CHECK_SETTLEMENT,
         bankCode: bankCode,
@@ -102,6 +112,7 @@ export const sharePosHelper = {
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
+        thirdPartyId: 'SPD',
         merchantTransId: merchantTransId,
         tranxType: SHAREPOS_CONSTANTS.tranxType.HOME_APP,
         bankCode: bankCode,
@@ -111,18 +122,20 @@ export const sharePosHelper = {
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
+        thirdPartyId: 'SPD',
         merchantTransId: merchantTransId,
         tranxType: SHAREPOS_CONSTANTS.tranxType.SETTING,
         bankCode: bankCode,
       }),
     ),
   autoInitialize: async ({
+    thirdPartyId,
     merchantTransId = genTransId(),
     bankCode, // VCB/EIB/BIDV/VTB/STB/ACB/ABB…
     refNo, // 8 digits (XXXXXXXX)
     ip, // With format xxx.xxx.xxx.xxx
     port, // Only number (0-9)
-    enableEncrypt = false, // true/false
+    enableEncrypt = enableEncrypt, // true/false
     nii, // (optional) Available when enableEncrypt = true , only number (0-9)
     typeEncrypt /* (optional) -Available when enableEncrypt = true
                                     - Value = BCD/HEXHL/HEXLH
@@ -135,15 +148,20 @@ export const sharePosHelper = {
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
+        bankCode,
+        currencyName: 'VND',
+        hideScreen: 0,
+        thirdPartyId: thirdPartyId,
         merchantTransId: merchantTransId,
         tranxType: SHAREPOS_CONSTANTS.tranxType.AUTO_INITIALIZE,
-        bankCode,
-        refNo,
-        ip,
-        port,
-        enableEncrypt,
-        nii,
-        typeEncrypt,
+        initParams: {
+          refNo: refNo,
+          ip: ip,
+          port: port,
+          enableEncrypt: enableEncrypt,
+          nii: nii,
+          typeEncrypt: typeEncrypt,
+        },
       }),
     ),
   executeEvent: async ({bankCode, tranxType, merchantTransId = genTransId()}) =>

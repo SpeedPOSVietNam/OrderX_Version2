@@ -3,17 +3,41 @@
         "loading": "Loading",
         "search": "Search",
         "total": "Total",
+
+        "setting":"Setting",
+        "switchLanguage":"Switch Language",
+        "switchAppMode":"Switch App Mode",
+        "production":"Production",
+        "development":"Development",
+        "serverHostIP":"Server Host IP",
+        "sharePosTestScreen":"SharePos Test Screen",
+        "open":"Open",
+        "english":"English",
+        "vietnam":"VietNam",
+
         "haveaNiceDay": "Have A Nice Day!",
         "enterPassword": "Enter Password",
         "waiterCode":"Waiter Code",
         "loginFailed":"Login Failed",
         "incorrectWaiterCode":"Incorrect waiter code",
         "login": "Login",
+        "error":"ERROR",
+        "missingWaiterCode":"Missing Waiter Code",
+        "accountDeactived":"Account deactived",
+        "contactYourAdministratorForMoreDetail":"Contact your administrator for more detail.",
+        
+
+
         "searchIDforpayment": "Search ID For Payment",
         "tableID": "Table ID",
         "occupied": "Occupied",
         "serving": "Serving",
         "empty": "Empty",
+        "warning":"Warning!",
+        "youCanNotPayForEmptyTable":"You Can Not Pay For Empty Table",
+        "itBelongsToOtherWaiter":"It Belongs To Other Waiter",
+
+
         "orderHistoty": "Order History",
         "fromDate": "From Date",
         "toDate": "To Date",
@@ -29,10 +53,17 @@
         "bill": "Bill",
         "cash": "CASH",
         "card": "CARD",
-        "net": "Net",
+        "net": "NET",
         "vat": "VAT",
         "amountDue": "Amount Due",
         "back": "Back",
         "apply": "Apply",
+        "paid":"PAID",
+        "paymentSuccessful":"Payment Successful!",
+        "inputValueMustBeEqualTotalOfTheBill":"Input Value Must Be Equal Total Of The Bill",
+        "pleaseChooseYourPaymentMethod":"Please choose your payment method",
+        "pleaseChooseSpecificTransaction":"Please choose specific transaction",
+        "fromDateCannotBeExceedThanToDate":"From Date cannot be exceed than To date",
+        "toDateCannotBeDeceedThanFromDate":"To Date cannot be deceed than From date"
     }
   }

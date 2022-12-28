@@ -23,8 +23,7 @@ export const APPMODE_CONSTANTS = {
 
     // Lưu ý: Cần cập nhật version trong folder android và ios luôn nhé. Sửa chỗ này chỉ tạo thay đổi trên giao diện thôi.
     VERSION: {
-      NAME: '1.0.4',
-      CODE: '202208270730',
+      NAME: '1.0',
     },
   },
   [APPMODE.DEV]: {
@@ -42,8 +41,7 @@ export const APPMODE_CONSTANTS = {
 
     // Lưu ý: Cần cập nhật version trong folder android và ios luôn nhé. Sửa chỗ này chỉ tạo thay đổi trên giao diện thôi.
     VERSION: {
-      NAME: '1.0.4',
-      CODE: '202208261134',
+      NAME: '1.0',
     },
   },
 };
