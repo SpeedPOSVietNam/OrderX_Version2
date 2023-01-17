@@ -79,17 +79,26 @@ export const TableListMain = ({navigation}) => {
   }, [TableNo]);
 
   useEffect(() => {
-    if (allPosHeader?.some(value => value.TABLENUM == TableNo) && !TableNo) {
+    if (
+      allPosHeader?.some(value => value.TABLENUM == TableNo) &&
+      TableNo == null
+    ) {
       setDuplicateTransact([]);
       posHeader();
       FetchTableData();
     }
-    if (allPosHeader?.some(value => value.TABLENUM == TableNo) && TableNo) {
+    if (
+      allPosHeader?.some(value => value.TABLENUM == TableNo) &&
+      TableNo !== null
+    ) {
       setDuplicateTransact([]);
       posHeader();
       FetchTableData();
     }
-    if (!allPosHeader?.some(value => value.TABLENUM == TableNo) && !TableNo) {
+    if (
+      !allPosHeader?.some(value => value.TABLENUM == TableNo) &&
+      TableNo !== null
+    ) {
       setFinalData(allTableData);
       // setDuplicateTransact([]);
       // posHeader();
@@ -111,7 +120,7 @@ export const TableListMain = ({navigation}) => {
   //   allPosHeader?.some(value => value.TABLENUM == TableNo) && TableNo == null,
   // );
 
-  // console.log('TableNo', TableNo == null);
+  console.log('TableNo', !TableNo);
 
   const checkTableValue = async () => {
     if (TableNo !== null) {

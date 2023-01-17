@@ -34,7 +34,7 @@ export const Payment = ({navigation, route}) => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const {TableNum, TRANSACT, TransactArray} = route.params;
-  const [allPosDetail, setAllPosDetail] = useState();
+  const [allPosDetail, setAllPosDetail] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [selectedTrans, setSlectedTrans] = useState('');
   const [posHdrByTrans, setPosHdrByTrans] = useState();
@@ -62,14 +62,12 @@ export const Payment = ({navigation, route}) => {
       .catch(err => console.log('CLOSE TRANSACION ERROR', err));
   };
   const posDetail = fetchPosDetail({
-    Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
+    Transact: selectedTrans,
   });
 
   const posHeader = fetchPostHeader({
     Transact: selectedTrans ? selectedTrans : JSON.stringify(TRANSACT),
   });
-
-  //const posPaymentMethod = HOOK_PAYMENT_METHOD({});
 
   const getPosDetail = () => {
     posDetail.then(res => setAllPosDetail(res)).catch(err => console.log(err));
@@ -81,12 +79,6 @@ export const Payment = ({navigation, route}) => {
       })
       .catch(err => console.log(err));
   };
-
-  // const getPaymentMethod = () => {
-  //   posPaymentMethod
-  //     .then(res => setAllPaymentMethod(res))
-  //     .catch(err => console.log(err));
-  // };
 
   useEffect(() => {
     getPosDetail();
@@ -219,11 +211,9 @@ export const Payment = ({navigation, route}) => {
       </View>
     );
   };
+
   const handlerPressKeyboard = b => {
     if (b !== '<') {
-      if (inputValue !== null) {
-        setInputValue();
-      }
       setInputValue(inputValue + b.toString());
     } else if (b == '<') {
       setInputValue('');
@@ -313,6 +303,7 @@ export const Payment = ({navigation, route}) => {
 
     const handlePayment = () => {
       if (paymentType !== undefined && selectedTrans !== undefined) {
+        console.log('input value', Number(inputValue));
         if (paymentType == 'CASH') {
           //TH1: Thanh toán hết mà k cần nhập số tiền
           if (Number(inputValue) == 0) {
@@ -459,7 +450,11 @@ export const Payment = ({navigation, route}) => {
     });
     result = JSON.parse(result);
 
-    if (result.Code === '200') {
+    console.log('RESULT NE:', result.Response.isoResponseCode);
+    console.log('Result of Card payment:', JSON.stringify(result));
+
+    if (result.Code === '200' && result.Response.isoResponseCode == '00') {
+      notifyMessage(t(result.Response.isoResponseCode));
       setPaidTrans(pre => [...pre, selectedTrans]);
       setPaidTransAmountLeft(pre => [
         ...pre,
@@ -471,11 +466,14 @@ export const Payment = ({navigation, route}) => {
       ]);
       setCardCheck('');
       getCloseTrancsaction(posHdrByTrans[0].FINALTOTAL);
-
-      console.log('Result of Card payment:', JSON.stringify(result));
-    } else {
-      setCardCheck(), setPaymentType(), Alert.alert(t('error'), result.Desc);
-      console.log('Result of Card payment:', JSON.stringify(result));
+    }
+    if (result.Code === '200' && result.Response.isoResponseCode !== '00') {
+      setCardCheck(''),
+        setPaymentType(),
+        Alert.alert(t('error'), t(result.Response.isoResponseCode));
+    }
+    if (result.Code !== '200') {
+      setCardCheck(''), setPaymentType(), Alert.alert(t('error'), result.Desc);
     }
   };
 
@@ -495,18 +493,19 @@ export const Payment = ({navigation, route}) => {
       }));
 
     const printContent = prepareBillForPrinter({
-      venueName: 'SpeedDemo',
-      venueAddress: 'SpeedDemo',
+      venueName: 'VANGNAICON',
+      venueAddress:
+        '135 Phan Đình Phùng, Phường 17, Phú Nhuận, Thành phố Hồ Chí Minh.',
       tableName: JSON.stringify(TableNum),
       billId: selectedTrans,
       waiterName: getWaiterID().EmpName + getWaiterID().EmpLastName,
-      numOfCust: 0,
+      // numOfCust: 0,
       items: items,
       netTotal: posHdrByTrans[0].NETTOTAL,
       finalTotal: posHdrByTrans[0].FINALTOTAL,
       taxes: [
-        {name: 'VAT 8%', amount: posHdrByTrans[0].TAX2},
-        {name: 'VAT 10%', amount: posHdrByTrans[0].TAX3},
+        {name: 'SVC 5 %%', amount: posHdrByTrans[0].TAX1},
+        {name: 'VAT 10 %%', amount: posHdrByTrans[0].TAX2},
       ],
       payments: [
         {name: paymentType, amount: posHdrByTrans[0].FINALTOTAL},
@@ -587,7 +586,6 @@ export const Payment = ({navigation, route}) => {
       // if (amountLeft == 0) {
       //   setPaidTrans(pre => [...pre, selectedTrans]);
       // }
-      console.log('modal visible up');
       setModalVisible(true);
     }
 
@@ -687,10 +685,11 @@ export const Payment = ({navigation, route}) => {
           }}>
           <TouchableOpacity
             onPress={() => {
-              navigation.push('TableListMain'),
-                setSlectedTrans(),
-                setPaymentType();
-              setInputValue();
+              setSlectedTrans(),
+                setPaymentType(),
+                setInputValue(''),
+                setAllPosDetail(''),
+                navigation.push('TableListMain');
             }}>
             <Image
               source={icons.arrowLeft}
@@ -737,7 +736,20 @@ export const Payment = ({navigation, route}) => {
                   backgroundColor: COLORS.lightGray,
                   justifyContent: 'space-between',
                 }}>
-                <BillPayment />
+                {allPosDetail.length == 0 ? (
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: 'column',
+                      alignContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Image source={icons.empty} />
+                    <Text>{t('emptyBill')}</Text>
+                  </View>
+                ) : (
+                  <BillPayment />
+                )}
               </View>
               <View
                 style={{
@@ -936,10 +948,11 @@ export const Payment = ({navigation, route}) => {
             </View>
             <TouchableOpacity
               onPress={() => {
-                navigation.push('TableListMain'),
-                  setSlectedTrans(),
-                  setPaymentType();
-                setInputValue();
+                setSlectedTrans(),
+                  setPaymentType(),
+                  setInputValue(''),
+                  setAllPosDetail([]),
+                  navigation.push('TableListMain');
               }}
               style={{
                 backgroundColor: COLORS.lightGray,

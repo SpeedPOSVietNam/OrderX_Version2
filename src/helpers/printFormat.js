@@ -95,11 +95,11 @@ export const prepareBillForPrinter = ({
   result += emptyLine();
   result += line(TEXT, LARGE, CENTER, `Table ${tableName}`);
   result += line(TEXT, MEDIUM, CENTER, `Bill: ${billId}`);
-  if (referenceCode != null) {
-    result += line(TEXT, MEDIUM, CENTER, `Trans: ${referenceCode}`);
-  }
+  // if (referenceCode != null) {
+  //   result += line(TEXT, MEDIUM, CENTER, `Trans: ${referenceCode}`);
+  // }
   result += line(TEXT, MEDIUM, CENTER, `Serv: ${rv(waiterName)}`);
-  result += line(TEXT, MEDIUM, CENTER, `${time}  # Cust: ${numOfCust}`);
+  // result += line(TEXT, MEDIUM, CENTER, `${time}  # Cust: ${numOfCust}`);
   result += separatorLine('=');
 
   // items

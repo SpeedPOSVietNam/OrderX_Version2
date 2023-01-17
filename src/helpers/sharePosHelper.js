@@ -74,14 +74,23 @@ export const sharePosHelper = {
       }),
     );
   },
-  checkTransaction: async ({bankCode, merchantTransId = genTransId()}) =>
+  checkTransaction: async ({merchantTransId = genTransId()}) =>
+    await shareposCall(
+      SHAREPOS_PAYMENT_SECRETKEY,
+      JSON.stringify({
+        thirdPartyId: 'SPD',
+        merchantTransId: merchantTransId,
+        tranxType: SHAREPOS_CONSTANTS.tranxType.CHECK_TRANSACTION,
+      }),
+    ),
+
+  specialTrans: async ({bankCode, merchantTransId = genTransId()}) =>
     await shareposCall(
       SHAREPOS_PAYMENT_SECRETKEY,
       JSON.stringify({
         thirdPartyId: 'SPD',
         merchantTransId: merchantTransId,
         tranxType: SHAREPOS_CONSTANTS.tranxType.PRNT_TRANX,
-        //tranxType: SHAREPOS_CONSTANTS.tranxType.CHECK_TRANSACTION,
         bankCode: bankCode,
         invoiceNo: '',
       }),
@@ -171,6 +180,16 @@ export const sharePosHelper = {
         merchantTransId: merchantTransId,
         tranxType,
         bankCode,
+      }),
+    ),
+  checkUpdate: async ({bankCode, merchantTransId = genTransId()}) =>
+    await shareposCall(
+      SHAREPOS_PAYMENT_SECRETKEY,
+      JSON.stringify({
+        thirdPartyId: 'SPD',
+        merchantTransId: merchantTransId,
+        tranxType: SHAREPOS_CONSTANTS.tranxType.CHECK_UPDATE,
+        bankCode: bankCode,
       }),
     ),
 };

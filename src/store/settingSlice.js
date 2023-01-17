@@ -11,7 +11,8 @@ export const createSettingSlice = (set, get) => ({
     numRows: 5,
     selectedMenu: null,
     appMode: APPMODE.PROD,
-    serverHostIP: 'http://qr-order.speedtech.vn',
+    //serverHostIP: 'http://qr-order.speedtech.vn',
+    serverHostIP: 'http://192.168.1.12',
   },
   settingActions: {
     setNumColumns: numColumns =>

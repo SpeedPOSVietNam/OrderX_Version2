@@ -81,7 +81,7 @@ export const EnterWaiter = ({navigation}) => {
       });
   };
 
-  const [waiterCode, setWaiterCode] = useState('221278');
+  const [waiterCode, setWaiterCode] = useState('');
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
