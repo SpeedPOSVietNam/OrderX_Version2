@@ -18,7 +18,7 @@ export const APPMODE_CONSTANTS = {
     SHAREPOS_PAYMENT_SECRETKEY: '1111111111111111', // for testing TODO get production secretKey
     APP_CLIENT: {
       guid: '4af88b8074de46be93d630df3884a51c',
-      secretKey: '753159',
+      secretKey: '123654789',
     },
 
     // Lưu ý: Cần cập nhật version trong folder android và ios luôn nhé. Sửa chỗ này chỉ tạo thay đổi trên giao diện thôi.
@@ -36,7 +36,7 @@ export const APPMODE_CONSTANTS = {
     SHAREPOS_PAYMENT_SECRETKEY: '1111111111111111', // for testing
     APP_CLIENT: {
       guid: '420ca2fa20ca4c079b67178891b97978',
-      secretKey: '753159',
+      secretKey: '123654789',
     },
 
     // Lưu ý: Cần cập nhật version trong folder android và ios luôn nhé. Sửa chỗ này chỉ tạo thay đổi trên giao diện thôi.

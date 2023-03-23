@@ -80,7 +80,7 @@ export const apiQROrderGET = async (path, queries) => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      PartnerKey: 'UGl4ZWxTUUxiYXNlX0RvbkRlbW9fMjM=',
+      PartnerKey: 'UGl4ZWxTcWxiYXNl',
       Token: token,
     },
   });

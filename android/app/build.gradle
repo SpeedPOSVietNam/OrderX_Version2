@@ -286,6 +286,8 @@ dependencies {
         implementation jscFlavor
     }
      implementation files('libs/pax/NeptuneLiteApi_V3.29.00_20220507.jar')
+     implementation files('libs/ingenico/usdk_api_aidl_v13.3.3.20211030.jar')
+    implementation files('libs/ingenico/usdk_api_aidl_limited_v2.0.1.20210608.jar')
  
 
 }
