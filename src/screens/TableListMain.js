@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo, useRef} from 'react';
+import React, {useEffect, useState, useMemo, useRef, useCallback, memo} from 'react';
 import {
   View,
   Text,
@@ -37,6 +37,7 @@ export const TableListMain = ({navigation}) => {
     const res = await fetchallTable;
     return setAllTableData(res);
   };
+
   const fetchposHeader = fetchPostHeader({});
 
   const posHeader = async () => {
@@ -64,11 +65,55 @@ export const TableListMain = ({navigation}) => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    allTable();
-    posHeader();
-    //setRefreshing(false);
-    FetchTableData();
+    fetchallTable.then(res => {setAllTableData(res);
+    fetchPostHeader.then(result => {setAllPosHeader(result);
+
+      if (res !== undefined && result !== undefined) {
+        for (let i = 0; i < res.length; i++) {
+          for (let x = 0; x < result.length; x++) {
+            if (res[i].TableNum === result[x].TABLENUM) {
+              (res[i].WHOSTART = result[x].WHOSTART),
+                (res[i].TRANSACT = result[x].TRANSACT),
+                setDuplicateTransact(pre => [
+                  ...pre,
+                  [result[x].TABLENUM, result[x].TRANSACT],
+                ]);
+              setFinalData(res);
+            }
+          }
+        }
+      }
+      setRefreshing(false);
+    })
+    })      
   };
+
+
+    // const onRefresh = async () => {
+    //   setRefreshing(true);
+    //   fetchallTable
+    //     .then(allTableResult => {
+    //       setAllTableData(allTableResult);
+    //       fetchPostHeader
+    //         .then(posHeaderResult => {
+    //           setAllPosHeader(posHeaderResult);
+  
+    //           // handle data
+    //           const _finalData = allTableResult.map(table => {
+    //             const filteredPosHeader = posHeader.filter(_ => _.TABLENUM === table.TableNum)[0];
+    //             return {
+    //               ...table,
+    //               ...filteredPosHeader
+    //             }
+    //           });
+  
+    //           // after fetch done
+    //           // DO:
+    //           setFinalData(_finalData);
+    //           setRefreshing(false);
+    //         });
+    //   });
+    // };
 
   // get data
   useEffect(() => {
@@ -110,18 +155,6 @@ export const TableListMain = ({navigation}) => {
       FetchTableData();
     }
   }, [allTableData]);
-
-  // console.log(
-  //   ' allPosHeader?.some(value => value.TABLENUM) == TableNo',
-  //   allPosHeader?.some(value => value.TABLENUM == TableNo) && TableNo !== null,
-  // );
-  // console.log(
-  //   ' allPosHeader?.some(value => value.TABLENUM) == TableNo',
-  //   allPosHeader?.some(value => value.TABLENUM == TableNo) && TableNo == null,
-  // );
-
-  console.log('TableNo', !TableNo);
-
   const checkTableValue = async () => {
     if (TableNo !== null) {
       setAllTableData('');
@@ -130,7 +163,9 @@ export const TableListMain = ({navigation}) => {
     }
   };
 
-  const TableStatusList = () => {
+  
+
+  const TableStatusList =() => {
     let arr = [];
     let x = 0;
     const filterDulplicateTrans = tableNo => {
@@ -215,6 +250,7 @@ export const TableListMain = ({navigation}) => {
         </View>
       </TouchableOpacity>
     );
+
     return (
       <View>
         {refreshing ? (
@@ -231,7 +267,8 @@ export const TableListMain = ({navigation}) => {
         )}
       </View>
     );
-  };
+  }
+
   return (
     <View
       style={{

@@ -4,6 +4,7 @@ import en from '../translations/en/en.json';
 import vi from '../translations/vi/vi.json';
 
 i18n.use(initReactI18next).init({
+  compatibilityJSON: 'v3',
   lng: 'en',
   fallbackLng: 'vi',
   resources: {
@@ -12,6 +13,9 @@ i18n.use(initReactI18next).init({
   },
   interpolation: {
     escapeValue: false, // react already safes from xss
+  },
+  react: {
+    useSuspense: false,
   },
 });
 

@@ -18,6 +18,7 @@ import {SharePosTestScreen} from '../screens/test/SharePosTestScreen';
 import '../constants/translations/i18n';
 import {useTranslation} from 'react-i18next';
 import {addAlert, settingSelectors} from '../store';
+import {eInvoice} from '../screens';
 export const AppNavigator = () => {
   const {t, i18n} = useTranslation();
 
@@ -51,6 +52,7 @@ export const AppNavigator = () => {
         <Stack.Screen name="Fail" component={Fail} />
         <Stack.Screen name="Payment" component={Payment} />
         <Stack.Screen name="OrderHistory" component={OrderHistory} />
+        <Stack.Screen name="eInvoice" component={eInvoice} />
       </Stack.Navigator>
     </NavigationContainer>
   );

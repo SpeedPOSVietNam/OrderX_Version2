@@ -11,8 +11,8 @@ export const createSettingSlice = (set, get) => ({
     numRows: 5,
     selectedMenu: null,
     appMode: APPMODE.PROD,
-    //serverHostIP: 'http://qr-order.speedtech.vn',
-    serverHostIP: 'http://192.168.1.12',
+    serverHostIP: 'http://qr-order.speedtech.vn',
+    //serverHostIP: 'http://118.69.183.33:82',
   },
   settingActions: {
     setNumColumns: numColumns =>
@@ -55,12 +55,6 @@ export const settingSelectors = {
   lang: state => state.setting.lang,
   language: state => languages[state.setting.lang],
   setLang: state => state.settingActions.setLang,
-  numColumns: state => state.setting.numColumns,
-  setNumColumns: state => state.settingActions.setNumColumns,
-  numRows: state => state.setting.numRows,
-  setNumRows: state => state.settingActions.setNumRows,
-  leftHandMode: state => state.setting.leftHandMode,
-  setLeftHandMode: state => state.settingActions.setLeftHandMode,
   selectedMenu: state => state.setting.selectedMenu,
   setSelectedMenu: state => state.settingActions.setSelectedMenu,
   appMode: state => state.setting.appMode,

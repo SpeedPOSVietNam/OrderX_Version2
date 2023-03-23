@@ -18,12 +18,7 @@ import {
   PasswordInputWithRevealButton,
 } from '../components';
 import icons from '../constants/icons';
-import {
-  deviceLogin,
-  getMobileOrderConfig,
-  getEmployee,
-  waiterLogin,
-} from '../hooks';
+import {getEmployee, waiterLogin} from '../hooks';
 import {
   authSelectors,
   useStore,
@@ -70,7 +65,7 @@ export const EnterWaiter = ({navigation}) => {
     setCheckLoading(true);
     if (waiterCode === '') {
       Alert.alert(t('warning'), t('missingWaiterCode!'));
-      return;
+      setCheckLoading(false);
     }
     Keyboard.dismiss();
 

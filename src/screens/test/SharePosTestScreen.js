@@ -71,15 +71,33 @@ export const SharePosTestScreen = () => {
     }
   };
 
+  // const autoInitialize = async () => {
+  //   try {
+  //     const result = await sharePosHelper.autoInitialize({
+  //       thirdPartyId: 'SPD',
+  //       bankCode: 'EIB',
+  //       refNo: '92009443',
+  //       ip: '202.004.168.168',
+  //       port: '8899',
+  //       nii: '115',
+  //       enableEncrypt: 1,
+  //       typeEncrypt: SHAREPOS_CONSTANTS.encryptType.HEXHL,
+  //     });
+  //     addLog(result);
+  //   } catch (e) {
+  //     addLog('[ERROR] ' + e);
+  //   }
+  // };
+
   const autoInitialize = async () => {
     try {
       const result = await sharePosHelper.autoInitialize({
         thirdPartyId: 'SPD',
         bankCode: 'EIB',
-        refNo: '92009443',
-        ip: '202.004.168.168',
-        port: '8899',
-        nii: '115',
+        refNo: '28122022',
+        ip: '113.161.81.81',
+        port: '11191',
+        nii: '004',
         enableEncrypt: 1,
         typeEncrypt: SHAREPOS_CONSTANTS.encryptType.HEXHL,
       });
@@ -192,7 +210,7 @@ export const SharePosTestScreen = () => {
       <TouchableOpacity
         onPress={specialTrans}
         style={{padding: 10, backgroundColor: '#ddd'}}>
-        <Text>SPECIAL TRANS</Text>
+        <Text>History Transaction</Text>
       </TouchableOpacity>
 
       <TouchableOpacity

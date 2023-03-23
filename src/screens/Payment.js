@@ -17,11 +17,13 @@ import icons, {card} from '../constants/icons';
 import {COLORS, FONTS, SIZES, STYLES} from '../constants/theme';
 import {HOOK_PAYMENT_METHOD} from '../hooks/react-query/usePaymentMethod';
 import {fetchPostHeader, fetchPosDetail, confirmCloseTable} from '../hooks';
-import {notifyMessage, roundDecimal, toCurrency} from '../helpers/utils';
+import {notifyMessage, toCurrency} from '../helpers/utils';
+import {getWaiterID} from '../store';
 import {prepareBillForPrinter} from '../helpers/printFormat';
 import {paxHelper} from '../helpers/paxHelper';
-import {getWaiterID} from '../store';
 import {sharePosHelper} from '../helpers/sharePosHelper';
+// import {ingenicoHelper} from '../helpers/ingenicoHelper';
+
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -34,6 +36,7 @@ export const Payment = ({navigation, route}) => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const {TableNum, TRANSACT, TransactArray} = route.params;
+
   const [allPosDetail, setAllPosDetail] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [selectedTrans, setSlectedTrans] = useState('');
@@ -431,17 +434,6 @@ export const Payment = ({navigation, route}) => {
     );
   };
 
-  // console.log(
-  //   'paidTrans',
-  //   paidTrans,
-  //   'Transact Array',
-  //   TransactArray,
-  //   'Card Check',
-  //   cardCheck,
-  //   'selectedTrans',
-  //   selectedTrans,
-  // );
-
   const handleMiniPosPay = async ({amount, addInfo, payTransactionID}) => {
     let result = await sharePosHelper.makePayment({
       amount,
@@ -449,9 +441,6 @@ export const Payment = ({navigation, route}) => {
       merchantTransId: payTransactionID,
     });
     result = JSON.parse(result);
-
-    console.log('RESULT NE:', result.Response.isoResponseCode);
-    console.log('Result of Card payment:', JSON.stringify(result));
 
     if (result.Code === '200' && result.Response.isoResponseCode == '00') {
       notifyMessage(t(result.Response.isoResponseCode));
@@ -493,9 +482,11 @@ export const Payment = ({navigation, route}) => {
       }));
 
     const printContent = prepareBillForPrinter({
-      venueName: 'VANGNAICON',
-      venueAddress:
-        '135 Phan Đình Phùng, Phường 17, Phú Nhuận, Thành phố Hồ Chí Minh.',
+      // venueName: 'VANGNAICON',
+      // venueAddress:
+      //   '135 Phan Đình Phùng, Phường 17, Phú Nhuận, Thành phố Hồ Chí Minh.',
+      venueName: 'SPEEDPOS',
+      venueAddress: '179EF CMT8, Phường 05, Q3, Thành phố Hồ Chí Minh.',
       tableName: JSON.stringify(TableNum),
       billId: selectedTrans,
       waiterName: getWaiterID().EmpName + getWaiterID().EmpLastName,
@@ -503,10 +494,7 @@ export const Payment = ({navigation, route}) => {
       items: items,
       netTotal: posHdrByTrans[0].NETTOTAL,
       finalTotal: posHdrByTrans[0].FINALTOTAL,
-      taxes: [
-        {name: 'SVC 5 %%', amount: posHdrByTrans[0].TAX1},
-        {name: 'VAT 10 %%', amount: posHdrByTrans[0].TAX2},
-      ],
+      taxes: [{name: 'VAT 10 %', amount: posHdrByTrans[0].TAX2}],
       payments: [
         {name: paymentType, amount: posHdrByTrans[0].FINALTOTAL},
         {
@@ -693,7 +681,7 @@ export const Payment = ({navigation, route}) => {
             }}>
             <Image
               source={icons.arrowLeft}
-              style={{width: 20, height: 20}}
+              style={{width: 25, height: 25}}
               resizeMode={'contain'}
             />
           </TouchableOpacity>
@@ -704,8 +692,8 @@ export const Payment = ({navigation, route}) => {
               fontSize: SIZES.body2,
               fontFamily: 'Arial',
             }}>
-            {t('payment')} - {t('table')} {JSON.stringify(TableNum)} -{' '}
-            {t('bill')}
+            {t('payment')} - {t('table')} {JSON.stringify(TableNum)}
+            {/* {t('bill')} */}
           </Text>
           <Text />
         </View>
@@ -946,7 +934,7 @@ export const Payment = ({navigation, route}) => {
                 <RenderKeyboard />
               </View>
             </View>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 setSlectedTrans(),
                   setPaymentType(),
@@ -969,6 +957,40 @@ export const Payment = ({navigation, route}) => {
                 }}>
                 {t('back')}
               </Text>
+            </TouchableOpacity> */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate('eInvoice')}
+              style={{
+                backgroundColor: COLORS.lightGray,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderColor: COLORS.title,
+                borderWidth: 1,
+                height: hp('6%'),
+              }}>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text
+                  style={{
+                    fontFamily: 'Arial',
+                    fontWeight: 'bold',
+                    fontSize: 15,
+                    color: COLORS.back,
+                    textAlign: 'center',
+                    padding: 10,
+                  }}>
+                  {t('E - Invoice')}
+                </Text>
+                <Image
+                  style={{height: 35, width: 35}}
+                  source={icons.eInvoice}
+                />
+              </View>
             </TouchableOpacity>
           </View>
           <View

@@ -1,22 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Alert,
-  Text,
-  TouchableOpacity,
-  View,
-  TextInput,
-  Image,
-} from 'react-native';
+import {Text, TouchableOpacity, View, TextInput, Image} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {APPMODE} from '../constants/global';
 import {COLORS, FONTS, SIZES} from '../constants/theme';
-// import {trackEvent, TRACK_EVENT_NAME} from '../helpers/codepush';
-import {addAlert, settingSelectors, useStore} from '../store';
+import {settingSelectors, useStore} from '../store';
 import {SharePosTestScreen} from './test/SharePosTestScreen';
 import {MyButton} from '../components';
 import icons from '../constants/icons';
 import '../constants/translations/i18n';
 import {useTranslation} from 'react-i18next';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 export const SettingScreen = ({navigation}) => {
   const {t, i18n} = useTranslation();
@@ -117,7 +113,64 @@ export const SettingScreen = ({navigation}) => {
           text={appMode === APPMODE.DEV ? t('development') : t('production')}
           onPress={switchAppMode}
         />
-        <SettingItem
+
+        <View
+          style={{
+            padding: SIZES.padding,
+            flexDirection: 'row',
+          }}>
+          <Text adjustsFontSizeToFit numberOfLines={1} style={{...FONTS.body4}}>
+            Server Host IP
+          </Text>
+
+          <View
+            style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
+            <TextInput
+              value={IPTemp}
+              onChangeText={text => {
+                setIPTemp(text);
+              }}
+              style={{
+                padding: SIZES.padding,
+                marginLeft: 5,
+                color: 'black',
+                backgroundColor: 'white',
+                borderRadius: 5,
+                height: hp('5%'),
+                width: wp('55%'),
+                fontSize: 14,
+                borderColor: 'black',
+                borderWidth: 1,
+              }}
+            />
+            {IPTemp !== serverHostIP && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <MyButton
+                  icon={icons.checked}
+                  iconStyle={{
+                    tintColor: COLORS.success,
+                  }}
+                  containerStyle={{}}
+                  onPress={() => setServerHostIP(IPTemp)}
+                />
+
+                <MyButton
+                  icon={icons.cancel}
+                  iconStyle={{
+                    tintColor: COLORS.danger,
+                  }}
+                  onPress={() => setIPTemp(serverHostIP)}
+                />
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* <SettingItem
           icon={icons.flash_on}
           text={t('serverHostIP')}
           rightComponent={
@@ -165,7 +218,7 @@ export const SettingScreen = ({navigation}) => {
               )}
             </View>
           }
-        />
+        /> */}
         <SettingButton
           title={t('sharePosTestScreen')}
           text={t('open')}

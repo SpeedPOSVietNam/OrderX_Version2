@@ -1,8 +1,9 @@
-import {NativeModules} from 'react-native';
+import {Alert, NativeModules} from 'react-native';
 
-const {SharePosModule, PaxModule, LauncherModule} = NativeModules;
+const {IngenicoModule, SharePosModule, PaxModule, LauncherModule} =
+  NativeModules;
 
-const notFound = () => alert('Ingenico module not found.');
+const notFound = () => Alert.alert('Ingenico module not found.');
 
 // const {
 //   canPrint: ingenicoCanPrint = (successCallback, failedCallback) =>
@@ -23,6 +24,13 @@ const {
 // const {getApps, launchApplication} = LauncherModule;
 
 export {
+  //igenico
+  // ingenico
+  // IngenicoModule,
+  // ingenicoCanPrint,
+  // ingencoPrintBill,
+  // ingenicoSearchCard,
+  // ingenicoStartEMV,
   // sharepos
   shareposCall,
   // pax

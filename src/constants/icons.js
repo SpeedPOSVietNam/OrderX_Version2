@@ -85,6 +85,8 @@ export const success20px = require('../assets/icons/Success_20px.png');
 export const fail20px = require('../assets/icons/Fail_20px.png');
 export const downArrow = require('../assets/icons/Down_Arrow.png');
 export const cancel = require('../assets/icons/cancel.png');
+export const eInvoice = require('../assets/icons/e-invoice-icon.png');
+
 export default {
   cancel,
   grid,
@@ -167,4 +169,5 @@ export default {
   success20px,
   fail20px,
   downArrow,
+  eInvoice,
 };
